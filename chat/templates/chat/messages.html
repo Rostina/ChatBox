@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}Messages{% endblock %}
+
+{% block content %}
+    <div class="row">
+
+        {%  if messages %}
+        {% for message in messages %}
+            <div class="thumbnail">
+            <div class="caption">
+                {% if message.title == "Friend Request" %}
+                <h3>Friend Request from {{ message.from_user }}</h3>
+                <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
+
+                <p><a href="{% url 'chat:confirm_friend' pk=message.pk %}" class="btn btn-primary" role="button">Accept Friend Reqeust!</a></p>
+                {% endif %}
+            </div>
+            </div>
+        {% endfor %}
+        {% else %}
+            <h3> Sorry no messages</h3>
+        {% endif %}
+    </div>
+{% endblock %}
