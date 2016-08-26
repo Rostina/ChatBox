@@ -10,6 +10,7 @@
 
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/costom_styles.css' %}">
     <link rel="stylesheet" href="{% static 'css/foundation.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
     {% block css %}{% endblock %}
@@ -27,6 +28,7 @@
                 {% if user.is_authenticated %}
                     <li class="has-submenu"><a href="{% url 'chat:logout' %}">Logout</a></li>
                     <li class="has-submenu"><a href="">Check ChatBox</a></li>
+                    <li class="has-submenu"><a href="{% url 'chat:messages' %}">Check messages</a></li>
                 {% else %}
                     <li class="has-submenu"><a href="{% url 'chat:sign_up' %}">Sign up</a></li>
                     <li class="has-submenu"><a href="{% url 'chat:login' %}">Login</a></li>

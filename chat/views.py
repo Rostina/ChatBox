@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 
@@ -116,8 +117,20 @@ def confirm_friend(request, pk):
         title="Friend Accepted"
     )
     messages.success(request, "Friend Accepted!")
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('chat:messages'))
 
+
+@login_required()
+def message_seen(request, pk):
+    """deletes message """
+    user = request.user
+    message = models.FriendMessage.objects.get(pk=pk)
+    if message.to_user.username != user.username:
+        messages.error(request, "YOU cant delete this message its not for you")
+    else:
+        message.delete(keep_parents=True)
+        messages.success(request, "messages marked as seen adn deleted")
+    return HttpResponseRedirect(reverse('chat:messages'))
 
 
 
@@ -126,3 +139,39 @@ def messages_list(request):
     user = models.Profile.objects.get(username=request.user.username)
     messages = models.FriendMessage.objects.filter(to_user=user.pk)
     return render(request, 'chat/messages.html', {'messages': messages})
+
+
+@login_required()
+def post_chat(request):
+    user = models.Profile.objects.get(username=request.user.username)
+    form = forms.ChatPostForm()
+    if request.method == "POST":
+        form = forms.ChatPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.user = user
+            post.save()
+            messages.success(request, "New ChatBox posted")
+            return HttpResponseRedirect(reverse('home'))
+    return render(request, 'chat/post_chat.html', {'form': form})
+
+
+@login_required()
+def chat_box_posts(request):
+    user = models.Profile.objects.get(username=request.user.username)
+    friends_list = user.friends.split(',')
+    friends = [int(x) for x in friends_list]
+    posts_list = models.Chat.objects.all().order_by("-time_posted")
+    paginator = Paginator(posts_list, 40) # Show 5 contacts per page
+
+    page = request.GET.get('page')
+    try:
+        posts = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        posts = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        posts = paginator.page(paginator.num_pages)
+    return render(request, 'chat/chatbox.html', {'user': user, 'friends': friends, 'posts': posts})
+

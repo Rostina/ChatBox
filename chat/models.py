@@ -40,6 +40,22 @@ class FriendMessage(models.Model):
         return self.title
 
 
+class Chat(models.Model):
+    SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
+    title = models.CharField(max_length=25, default="Post")
+    image = models.ImageField(upload_to='images',
+                              null=True, blank=True)
+    chat =  models.TextField(null=True, blank=True)
+    share = models.CharField(max_length=50, choices=SHARINGCHOICES)
+    user = models.ForeignKey(Profile)
+    time_posted = models.DateTimeField(auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+
 
 
 

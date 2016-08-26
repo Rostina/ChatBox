@@ -10,10 +10,13 @@
             <div class="thumbnail">
             <div class="caption">
                 {% if message.title == "Friend Request" %}
-                <h3>Friend Request from {{ message.from_user }}</h3>
-                <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
-
-                <p><a href="{% url 'chat:confirm_friend' pk=message.pk %}" class="btn btn-primary" role="button">Accept Friend Reqeust!</a></p>
+                    <h3>Friend Request from {{ message.from_user }}</h3>
+                    <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
+                    <p><a href="{% url 'chat:confirm_friend' pk=message.pk %}" class="btn btn-primary" role="button">Accept Friend Reqeust!</a></p>
+                {% elif message.title == "Friend Accepted" %}
+                    <h3>Friend Request accepted from {{ message.from_user }}</h3>
+                    <p>{{ message.from_user }} accepted your friend requested. Now you will see all his chats and he will see yours.</p>
+                    <p><a href="{% url 'chat:message_seen' pk=message.pk %}" class="btn btn-primary" role="button">X</a></p>
                 {% endif %}
             </div>
             </div>
