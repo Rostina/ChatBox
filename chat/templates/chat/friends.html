@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block title %}Your Friends{% endblock %}
+
+{% block content %}
+    <div class="row">
+    {% for friend in friends %}
+        <div class="col-sm-12">
+            <div class="thumbnail">
+                <div class="caption"><a href="{% url 'chat:friend_detail' pk=friend.pk%}">
+                    <img src="{{ friend.picture.url }}" class="img-responsive" />
+                    <h1>{{ friend }}</h1>
+                    <p>Phone number: {{ friend.phone }}</p>
+                    <p>Email: {{ friend.email }}</p>
+                    <p>Gender: {{ friend.gender }}</p>
+                    <p>Birthday: {{ friend.birthday }}</p>
+                    {% block friend_request %}{% endblock %}
+                </a></div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

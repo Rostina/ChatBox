@@ -23,12 +23,17 @@
     <nav class="top-bar" role="navigation">
         <section class="top-bar-left">
             <ul class="dropdown menu" data-dropdown-menu role="menubar">
-                <li class="menu-text">The Electric Bike Shop!</li>
+                <li class="menu-text">The ChatBox!</li>
                 {% block submenu %}{% endblock %}
-                {% if user.is_authenticated %}
+                {% if request.user.is_authenticated %}
                     <li class="has-submenu"><a href="{% url 'chat:logout' %}">Logout</a></li>
-                    <li class="has-submenu"><a href="">Check ChatBox</a></li>
+                    <li class="has-submenu"><a href="{% url 'chat:chat' %}">Check ChatBox</a></li>
                     <li class="has-submenu"><a href="{% url 'chat:messages' %}">Check messages</a></li>
+                    <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
+                    <form method="GET" action="{% url 'chat:find_friends' %}">
+                        <input type="text" name="q" placeholder="Search for friends" value="{{ request.GET.q }}" />
+                        <input type="submit" class="btn btn-primary" value="Find Friends" />
+                    </form>
                 {% else %}
                     <li class="has-submenu"><a href="{% url 'chat:sign_up' %}">Sign up</a></li>
                     <li class="has-submenu"><a href="{% url 'chat:login' %}">Login</a></li>

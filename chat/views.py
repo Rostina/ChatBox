@@ -4,13 +4,19 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 
 # Create your views here.
 from django.urls import reverse
-from django.views.generic import CreateView, DetailView
+from django.views.generic import DetailView
 
 from chat import models, forms
+
+
+def friend_list(user):
+    friends_list = user.friends.split(',')
+    friends = [int(x) for x in friends_list]
+    return friends
 
 
 def loginer(request):
@@ -57,7 +63,7 @@ def sign_up(request):
 
     return render(request, 'chat/profile_form.html', {"form": form})
 
-
+"""
 class SignUpView(CreateView):
     fields = ("first_name", "last_name", "phone",
               "email", "birthday", "gender", "picture"
@@ -73,7 +79,7 @@ class SignUpView(CreateView):
             email=form.cleaned_data['email'],
             password=form.cleaned_data['password']
         )
-
+"""
 
 def logout_view(request):
     """logs out user"""
@@ -86,8 +92,25 @@ class ProfileDetailView(DetailView):
     model = models.Profile
 
 
+@login_required
+def friends(request):
+    user = models.Profile.objects.get(username=request.user.username)
+    friends = models.Profile.objects.filter(pk__in=friend_list(user))
+    return render(request, 'chat/friends.html', {'friends': friends})
+
+
+@login_required
+def find_friends(request):
+    friends = models.Profile.objects.all()
+    search = request.GET.get("q")
+    if search:
+        friends = models.Profile.objects.filter(username__icontains=search)
+    return render(request, "chat/find_friends.html", {'friends': friends})
+
+
 @login_required()
 def request_friend(request, pk):
+    """request friends"""
     user = models.Profile.objects.get(email=request.user.email, username=request.user.username)
     to = models.Profile.objects.get(pk=pk)
     models.FriendMessage.objects.create(
@@ -159,8 +182,7 @@ def post_chat(request):
 @login_required()
 def chat_box_posts(request):
     user = models.Profile.objects.get(username=request.user.username)
-    friends_list = user.friends.split(',')
-    friends = [int(x) for x in friends_list]
+    friends = friend_list(user)
     posts_list = models.Chat.objects.all().order_by("-time_posted")
     paginator = Paginator(posts_list, 40) # Show 5 contacts per page
 

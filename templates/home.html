@@ -1,23 +1,8 @@
 {% extends "layout.html" %}
 
-{% block title %}++The ChatBox{% endblock %}
+{% block title %}The ChatBox{% endblock %}
 
 {% block content %}
-    <h3>Welcome to the Chat Box{% if user.is_authenticated %}Welcome User{% endif %}</h3>
-    <h3>{{ user }}</h3>
-    <p>{{ user.friends }}</p>
-    {% if two in user %}
-        <p>YESSSSSSSSSSSSS</p>
-        {% endif %}
-    {% if ',' in user %}
-        <p>WHATTT</p>
-        {% endif %}
-    {% if 4 in user %}
-        <p>NOOOOOOOOOOOO</p>
-    {% else %}
-        <p>You lose</p>
-    {% endif %}
-    {% if user.is_authenticated %}{% else %}
-        <p>You are not logged in. Log in or if your new Sign up!!!!!!</p>
-    {% endif %}
+    <h3>Welcome to the Chat Box</h3>
+    <p>You are not logged in. Log in or if your new Sign up!!!!!!</p>
 {% endblock %}

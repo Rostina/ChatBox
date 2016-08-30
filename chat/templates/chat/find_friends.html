@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}
+
+{% block title %}Find Friends{% endblock %}
+
+{% block friend_request %}
+    <p><a href="{% url 'chat:friend_request' pk=friend.pk %}" class="btn btn-primary" role="button">Make Friend Request!</a></p>
+{% endblock %}

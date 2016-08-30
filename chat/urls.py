@@ -8,6 +8,8 @@ urlpatterns = [
     url(r'login/$', views.loginer, name="login"),
     url(r'logout/$', views.logout_view, name="logout"),
 
+    url(r'^friends/$', views.friends, name='friends'),
+    url(r'^find friends/$', views.find_friends, name='find_friends'),
     url(r'^find friends/(?P<pk>\d+)/$', views.ProfileDetailView.as_view(), name='friend_detail'),
     url(r'^friend request/(?P<pk>\d+)/$', views.request_friend, name="friend_request"),
     url(r'^friend accepted/(?P<pk>\d+)/$', views.confirm_friend, name='confirm_friend'),
