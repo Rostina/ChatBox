@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.urls import reverse
@@ -180,10 +180,58 @@ def post_chat(request):
 
 
 @login_required()
+def make_comments(request, pk):
+    user = models.Profile.objects.get(username=request.user.username)
+    post = get_object_or_404(models.Chat, pk=pk)
+    form = forms.CommentForm()
+    if request.method == "POST":
+        form = forms.CommentForm(request.POST, request.FILES)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.user = user
+            comment.share = "Public"
+            comment.comment = post
+            comment.distance_from_sourse = post.distance_from_sourse + 1
+            comment.save()
+            messages.success(request, "Comment added")
+            return HttpResponseRedirect(reverse('home'))
+
+
+
+@login_required()
+def post_comment(request, pk):
+    user = models.Profile.objects.get(username=request.user.username)
+    post = get_object_or_404(models.Chat, pk=pk)
+    form = forms.CommentForm(request.POST, request.FILES)
+    # image = request.GET.get("image")
+    # text = request.GET.get("text")
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = user
+        comment.share = "Public"
+        comment.comment = post
+        comment.distance_from_sourse = post.distance_from_sourse + 1
+        comment.save()
+        """models.Chat.objects.create(
+            comment=post,
+            distance_from_sourse=post.distance_from_sourse + 1,
+            image=image,
+            text=text,
+            share="Public",
+            user=user,
+        )"""
+        messages.success(request, "Comment has been added")
+    else:
+        messages.error(request, "Comment need either a picture or a comment")
+    return HttpResponseRedirect(reverse('home'))
+
+
+
+@login_required()
 def chat_box_posts(request):
     user = models.Profile.objects.get(username=request.user.username)
     friends = friend_list(user)
-    posts_list = models.Chat.objects.all().order_by("-time_posted")
+    posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
     paginator = Paginator(posts_list, 40) # Show 5 contacts per page
 
     page = request.GET.get('page')
@@ -196,4 +244,8 @@ def chat_box_posts(request):
         # If page is out of range (e.g. 9999), deliver last page of results.
         posts = paginator.page(paginator.num_pages)
     return render(request, 'chat/chatbox.html', {'user': user, 'friends': friends, 'posts': posts})
+
+
+
+
 

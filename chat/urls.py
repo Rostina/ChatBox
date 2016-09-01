@@ -18,4 +18,6 @@ urlpatterns = [
     url(r'^message seen/(?P<pk>\d+)/$', views.message_seen, name='message_seen'),
 
     url(r'^post/$', views.post_chat, name='post'),
+    url(r'^post/(?P<pk>\d+)/$', views.make_comments, name='comment'),
+    url(r'^comment/(?P<pk>\d+)$', views.post_comment, name='post_comment'),
 ]

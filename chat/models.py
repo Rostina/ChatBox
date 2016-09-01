@@ -1,8 +1,9 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
 
 # Create your models here.
-from separatedvaluesfield.models import SeparatedValuesField
+
 
 
 class Profile(models.Model):
@@ -42,16 +43,27 @@ class FriendMessage(models.Model):
 
 class Chat(models.Model):
     SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
+    comment = models.ForeignKey('self', null=True, blank=True, default=None)
+    distance_from_sourse = models.PositiveIntegerField(default=1)
     title = models.CharField(max_length=25, default="Post")
     image = models.ImageField(upload_to='images',
                               null=True, blank=True)
-    chat =  models.TextField(null=True, blank=True)
+    text =  models.TextField(null=True, blank=True)
     share = models.CharField(max_length=50, choices=SHARINGCHOICES)
     user = models.ForeignKey(Profile)
     time_posted = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
+        if self.title == "Post":
+            if self.text:
+                return "Text: {}".format(self.text)
+            else:
+                return "pk: {}".format(self.pk)
         return self.title
+
+    def clean(self):
+        if self.comment == self:
+            raise ValidationError("a chat cant be a comment on its self")
 
 
 

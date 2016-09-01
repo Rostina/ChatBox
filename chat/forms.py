@@ -9,7 +9,7 @@ def must_be_empty(value):
 
 
 class ProfileForm(forms.ModelForm):
-
+    birthday = forms.DateField(widget=forms.SelectDateWidget)
     class Meta:
         model = models.Profile
         fields = ["first_name", "last_name", "phone",
@@ -59,7 +59,22 @@ class LoginForm(forms.Form):
 class ChatPostForm(forms.ModelForm):
     class Meta:
         model = models.Chat
-        fields = ['image', 'title', 'chat', 'share']
+        fields = ['image', 'title', 'text', 'share']
+
+    honeypot = forms.CharField(required=False,
+                               widget=forms.HiddenInput,
+                               label="leave empty",
+                               validators=[must_be_empty],
+                               )
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = models.Chat
+        fields = ['image', 'text']
 
     honeypot = forms.CharField(required=False,
                                widget=forms.HiddenInput,

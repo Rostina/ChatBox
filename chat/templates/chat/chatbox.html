@@ -8,6 +8,7 @@
     <div class="col-sm-6 col-sm-offset-3">
         <h1></h1>
     <div class="row">
+    <p><a href="{% url 'chat:post' %}" class="btn btn-primary" role="button">Post something</a>
     {% for post in posts %}
         {% post_filter post user friends as post_good %}
         {% if post_good %}
@@ -16,13 +17,24 @@
             <div class="thumbnail">
                 <div class="caption">
 
-                    <h3><img src="{{ post.user.picture.url }}" class="profile_pic" />     {%  if post.title != "Post" %}Title: {% endif %}{{ post.title }} from {{ post.user }} <small>{{ post.time_posted|timesince }} ago</small></h3>
+                    <h3><img src="{{ post.user.picture.url }}" class="profile_pic" />
+                        {%  if post.title != "Post" %}Title: {% endif %}{{ post.title }} from {{ post.user }} <small>{{ post.time_posted|timesince }} ago</small></h3>
                     {% if post.image %}
                         <img src="{{ post.image.url }}" class="img-responsive" />
                     {% endif %}
-                    <p>{{ post.chat|linebreaks|truncatechars:120 }}</p>
+                    <p>{{ post.text|linebreaks|truncatechars:120 }}</p>
                     <p>{{ post.share }}</p>
-                    <p><a href="{% url 'home' %}" class="btn btn-primary" role="button">Comment</a>
+{#                    <p><a href="{% url 'chat:comment' pk=post.pk %}" class="btn btn-primary" role="button">Comment</a>#}
+                    <form method="POST" action="{% url 'chat:post_comment' pk=post.pk %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="text" placeholder="text" value="{{ request.GET.text }}" />
+                        <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}" />
+                        <input type="submit" class="btn btn-primary" value="Comment" />
+                    </form>
+                    {% has_comments post 2 as comments %}
+                    {% if comments %}
+                        {% comments_list comments %}
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -30,6 +30,7 @@
                     <li class="has-submenu"><a href="{% url 'chat:chat' %}">Check ChatBox</a></li>
                     <li class="has-submenu"><a href="{% url 'chat:messages' %}">Check messages</a></li>
                     <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
+                    <li class="has-sumenu"><a href="{% url 'chat:post' %}">Post a message</a></li>
                     <form method="GET" action="{% url 'chat:find_friends' %}">
                         <input type="text" name="q" placeholder="Search for friends" value="{{ request.GET.q }}" />
                         <input type="submit" class="btn btn-primary" value="Find Friends" />
