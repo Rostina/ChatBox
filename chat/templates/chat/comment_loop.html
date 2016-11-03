@@ -1,24 +1,40 @@
 {% load template_func %}
 
+<script>
+    {% block javascript %}
+        $(".show_replies").click(function() {
+            var comment = $(this).next().val();
+            $(this).next().css("display", "block");
+            console.log("Went through");
+        });
+    {% endblock %}
+</script>
 
 {% for comment in comments %}
-
-    <h3><img src="{{ comment.user.picture.url }}" class="profile_pic" />
-    {{ comment.user }} <small>{{ comment.time_posted|timesince }} ago</small></h3>
+    <h3><img src="{{ comment.user.picture.url }}" class="profile_pic"/>
+        {{ comment.user }}
+        <small>{{ comment.time_posted|timesince }} ago</small>
+    </h3>
     {% if comment.image %}
-         <img src="{{ comment.image.url }}" class="img-responsive" />
+        <img src="{{ comment.image.url }}" class="img-responsive"/>
     {% endif %}
     <p>{{ comment.text|linebreaks|truncatechars:120 }}</p>
-{#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
-   <form method="POST" action="{% url 'chat:post_comment' pk=comment.pk %}" enctype="multipart/form-data">
-         {% csrf_token %}
-         <input type="text" name="text" placeholder="text" value="{{ request.GET.text }}" />
-         <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}" />
-         <input type="submit" class="btn btn-primary" value="Reply" />
+    {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
+    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' pk=comment.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="text" placeholder="text" value="{{ request.GET.text }}"/>
+        <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}"/>
+        <input type="submit" class="btn btn-primary" class="submit-comment" value="Reply"/>
     </form>
-        {% new_distance comment.distance_from_sourse as distance %}
-    {% has_comments comment distance  as comments %}
-    {% if comments %}
-        {% comments_list comments %}
-    {% endif %}
+
+
+    {% new_distance comment.distance_from_sourse as distance %}
+        {% has_comments comment distance as comments %}
+        {% if comments %}
+
+            <button class="show_replies">Show replies</button>
+            <div class="replies">
+            {% comments_list comments %}
+            </div>
+        {% endif %}
 {% endfor %}

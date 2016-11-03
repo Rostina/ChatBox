@@ -1,7 +1,47 @@
-{% extends 'layout.html' %}
+{% extends 'chat/friends.html' %}
+
+<script>
+    {% block javascript %}
+        $(".friend_request").click(function(event) {
+            event.preventDefault();
+            var numbbb = parseInt($(this).prev("input[type='hidden']").val());
+            var data = {
+                friend: numbbb,
+            };
+            $.ajax({
+                type: "GET",
+                url: "{% url 'chat:friend_request' %}",
+                data: data,
+                success: function (data) {
+                    alert("Went well");
+                    $("#friend_" + numbbb + " .friend_request").fadeOut();
+                    showFlashMessage("Friend Request sent");
+                    document.getElementById("message_"+numbbb).innerHTML = "Friend Request sent";
+                    $("#friend_" + numbbb).css({'color': 'chocolate'});
+                },
+                error: function (responce, error) {
+                    alert("Didn' t Go");
+                    $("#friend_" + numbbb).submit();
+                }
+
+            })
+
+        });
+    {% endblock %}
+</script>
 
 {% block title %}Find Friends{% endblock %}
 
 {% block friend_request %}
-    <p><a href="{% url 'chat:friend_request' pk=friend.pk %}" class="btn btn-primary" role="button">Make Friend Request!</a></p>
+    <form id="friend_{{ friend.pk }}" method="GET" href="{% url 'chat:friend_request' %}">
+        <input  type="hidden" name="friend" value="{{ friend.pk }}" >
+        {% if friend == user  %}
+            <h4 style="color: chocolate">This is you!</h4>
+        {% elif friend in your_friends%}
+            <h4 style="color: red">This is your friend allready!</h4>
+        {% else %}
+            <input type="submit" class="btn btn-primary friend_request"  role="button" value="Make Friend Request!">
+            <h4 id="message_{{ friend.pk }}" style="color: chocolate"></h4>
+        {% endif %}
+    </form>
 {% endblock %}

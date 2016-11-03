@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse, request
 from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
@@ -14,78 +14,13 @@ from chat import models, forms
 
 
 def friend_list(user):
+    """returns a list of pk's of all the persons friends"""
     friends_list = user.friends.split(',')
-    friends = [int(x) for x in friends_list]
-    return friends
-
-
-def loginer(request):
-    """logs in user"""
-    form = forms.LoginForm()
-    if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
-        if form.is_valid():
-            user = authenticate(
-                username=form.cleaned_data['name'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    messages.add_message(request, messages.SUCCESS, "You are now login!")
-                    return HttpResponseRedirect(reverse('home'))
-                else:
-                    messages.add_message(request, messages.ERROR, "This account has been disabled sorry!")
-                    return HttpResponseRedirect(reverse('home'))
-        else:
-            messages.add_message(request, messages.ERROR, "Invalid Login!")
-    return render(request, 'chat/login.html', {'form': form})
-
-
-def sign_up(request):
-    """ User could sign up to chat and make account"""
-    form = forms.ProfileForm()
-    if request.method == "POST":
-        form = forms.ProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.picture = form.cleaned_data['picture']
-            profile.username = form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name']
-            profile.save()
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
-            login(request, user)
-            messages.success(request, "You are all signed up")
-
-    return render(request, 'chat/profile_form.html', {"form": form})
-
-"""
-class SignUpView(CreateView):
-    fields = ("first_name", "last_name", "phone",
-              "email", "birthday", "gender", "picture"
-              )
-    model = models.Profile
-
-    def form_valid(self, form):
-        User.objects.create_user(
-            username = "{} {}".format(
-                form.cleaned_data['first_name'],
-                form.cleaned_data['last_name']
-            ),
-            email=form.cleaned_data['email'],
-            password=form.cleaned_data['password']
-        )
-"""
-
-def logout_view(request):
-    """logs out user"""
-    logout(request)
-    messages.add_message(request, messages.SUCCESS, "Logout Successfully!")
-    return HttpResponseRedirect(reverse('home'))
+    try:
+        friends = [int(x) for x in friends_list]
+        return friends
+    except:
+        return False
 
 
 class ProfileDetailView(DetailView):
@@ -94,23 +29,37 @@ class ProfileDetailView(DetailView):
 
 @login_required
 def friends(request):
+    """returs all friends of a person"""
     user = models.Profile.objects.get(username=request.user.username)
-    friends = models.Profile.objects.filter(pk__in=friend_list(user))
+    fri = friend_list(user)
+    if fri == False:
+        messages.info(request, "Lets find some friends for you")
+        return HttpResponseRedirect(reverse("chat:find_friends"))
+    friends = models.Profile.objects.filter(pk__in=fri)
     return render(request, 'chat/friends.html', {'friends': friends})
 
 
 @login_required
 def find_friends(request):
-    friends = models.Profile.objects.all()
+    """page to show all profiles or search fo posific profilles"""
     search = request.GET.get("q")
+    user = models.Profile.objects.get(username=request.user.username)
+    old_friends = friend_list(user)
+    your_friends = None
     if search:
         friends = models.Profile.objects.filter(username__icontains=search)
-    return render(request, "chat/find_friends.html", {'friends': friends})
+        your_friends = models.Profile.objects.filter(pk__in=old_friends)
+    else:
+        friends = models.Profile.objects.exclude(pk__in=old_friends).exclude(pk=user.pk).order_by()
+    return render(request, "chat/find_friends.html", {'friends': friends, 'user': user, 'your_friends': your_friends})
 
 
 @login_required()
-def request_friend(request, pk):
+def request_friend(request):
     """request friends"""
+    pk = request.GET.get('friend')
+    print(pk)
+
     user = models.Profile.objects.get(email=request.user.email, username=request.user.username)
     to = models.Profile.objects.get(pk=pk)
     models.FriendMessage.objects.create(
@@ -118,14 +67,17 @@ def request_friend(request, pk):
         to_user=to,
         title="Friend Request"
     )
-    messages.success(request, "Friend Request sent!")
-    return HttpResponseRedirect(reverse('home'))
+    messages.success(request, "Friend Request to {} sent!".format(to.username))
+    if request.is_ajax():
+        pass
+    return HttpResponseRedirect(reverse('chat:find_friends'))
 
 
 @login_required
-def confirm_friend(request, pk):
+def confirm_friend(request):
     """confirm friend request"""
     user = request.user
+    pk = request.GET.get('message_pk')
     you = models.Profile.objects.get(username=user.username)
     message = models.FriendMessage.objects.get(pk=pk)
     friend = models.Profile.objects.get(username=message.from_user)
@@ -144,9 +96,10 @@ def confirm_friend(request, pk):
 
 
 @login_required()
-def message_seen(request, pk):
+def message_seen(request):
     """deletes message """
     user = request.user
+    pk = request.GET.get('message_pk')
     message = models.FriendMessage.objects.get(pk=pk)
     if message.to_user.username != user.username:
         messages.error(request, "YOU cant delete this message its not for you")
@@ -154,7 +107,6 @@ def message_seen(request, pk):
         message.delete(keep_parents=True)
         messages.success(request, "messages marked as seen adn deleted")
     return HttpResponseRedirect(reverse('chat:messages'))
-
 
 
 @login_required()
@@ -180,6 +132,17 @@ def post_chat(request):
 
 
 @login_required()
+def fast_post(request):
+    text = request.GET.get("text", "")
+    user = models.Profile.objects.get(email=request.user.email)
+    share = request.GET.get("share")
+    print("IT went thorugh")
+    models.Chat.objects.create(text=text, share="Public", title="Post", user=user)
+    messages.success(request, "Posted!")
+    return HttpResponseRedirect(reverse("chat:chat"))
+
+
+@login_required()
 def make_comments(request, pk):
     user = models.Profile.objects.get(username=request.user.username)
     post = get_object_or_404(models.Chat, pk=pk)
@@ -195,7 +158,6 @@ def make_comments(request, pk):
             comment.save()
             messages.success(request, "Comment added")
             return HttpResponseRedirect(reverse('home'))
-
 
 
 @login_required()
@@ -226,14 +188,47 @@ def post_comment(request, pk):
     return HttpResponseRedirect(reverse('home'))
 
 
-
 @login_required()
 def chat_box_posts(request):
+    """"""
     user = models.Profile.objects.get(username=request.user.username)
     friends = friend_list(user)
     posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
-    paginator = Paginator(posts_list, 40) # Show 5 contacts per page
-
+    form = forms.ChatPostForm(request.POST, request.FILES or None)
+    if form.is_valid():
+        if request.is_ajax():
+            image = request.GET.get("image")
+            text = request.GET.get("text")
+            title = request.GET.get("title")
+            share = request.GET.get("share")
+            i = False
+            error = False
+            if not image:
+                if share and title and text:
+                    post = models.Chat(user=user,
+                                       title=title,
+                                       text=text,
+                                       share=share,
+                                       )
+                    post.save()
+                elif share and text:
+                    post = models.Chat(user=user,
+                                       title="Post",
+                                       text=text,
+                                       share=share,
+                                       )
+                    post.save()
+            else:
+                if share:
+                    i = True
+            image = i
+            return JsonResponse({'image': image, 'error': error, 'post': text})
+        else:
+            post = form.save(commit=False)
+            post.user = user
+            post.save()
+            messages.success(request, "Posted!")
+    paginator = Paginator(posts_list, 40)  # Show 5 contacts per page
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
@@ -243,9 +238,4 @@ def chat_box_posts(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         posts = paginator.page(paginator.num_pages)
-    return render(request, 'chat/chatbox.html', {'user': user, 'friends': friends, 'posts': posts})
-
-
-
-
-
+    return render(request, 'chat/chatbox.html', {'user': user, 'friends': friends, 'posts': posts, 'form': form})

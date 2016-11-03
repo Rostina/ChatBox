@@ -24,7 +24,10 @@ from ChatBox import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
-    url(r'^chat/', include("chat.urls", namespace="chat"))
+    url(r'^chat/', include("chat.urls", namespace="chat")),
+    url(r'^sign up/$', views.sign_up, name="sign_up"),
+    url(r'^login/$', views.loginer, name="login"),
+    url(r'^logout/$', views.logout_view, name="logout"),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

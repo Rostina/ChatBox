@@ -23,6 +23,7 @@ class Profile(models.Model):
         default="",
         validators=[validate_comma_separated_integer_list]
     )
+    firends2 = models.ManyToManyField("Profile", null=True, blank=True)
 
 
     """def friend_list(self):
@@ -45,7 +46,7 @@ class Chat(models.Model):
     SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
     comment = models.ForeignKey('self', null=True, blank=True, default=None)
     distance_from_sourse = models.PositiveIntegerField(default=1)
-    title = models.CharField(max_length=25, default="Post")
+    title = models.CharField(max_length=25, default="Post", null=True, blank=True)
     image = models.ImageField(upload_to='images',
                               null=True, blank=True)
     text =  models.TextField(null=True, blank=True)

@@ -2,13 +2,65 @@
 
 {% load template_func %}
 
+<script>
+    {% block javascript %}
+        $("#submit-post").click(function (event) {
+            event.preventDefault();
+            formData = {
+                image: $('#id_image').val(),
+                text: $('#id_text').val(),
+                title: $("#id_title").val(),
+                share: $("#id_share").val()
+            };
+            $.ajax({
+                type: $(this).attr('method'),
+                url: "{% url 'chat:chat' %}",
+                data: formData,
+                success: function(data) {
+                    if (data.image == true) {
+                        alert("Need to reload");
+                        $("#post-form").submit();
+                    } else {
+                        alert("Went well");
+                        $("#new-post").text("NEW POST: '"+ data.post + "'");
+                        $("#more-post").fadeIn();
+                        $("#post-form").fadeOut();
+                    }
+                },
+                error: function(response, error) {
+                    alert("Need to reload");
+                }
+            })
+        });
+    {% endblock %}
+</script>
+
 {% block title %}ChatBox{% endblock %}
 
 {% block content %}
     <div class="col-sm-6 col-sm-offset-3">
-        <h1></h1>
+
+   {% comment %}     <form action="{% url 'chat:fast_post' %}" method="POST" enctype="multipart/form-data">
+            <input type="text" name="title">
+            <input type="text" name="text">
+            Share with: <input type="radio" name="share" value="Public">Public
+            <input type="radio" name="share" value="Friends">Friends
+            {% csrf_token %}
+            <input type="submit" value="post" class="button-form">
+        </form>{% endcomment %}
+     <form id="post-form" method="POST" action="" enctype="multipart/form-data">
+        <p  id="title">{{ form.title }}</p>
+        <p id="image">{{ form.image }}</p>
+        <p id="text">{{ form.text }}</p>
+        <p id="share">{{ form.share }}</p>
+        {% csrf_token %}
+        <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
+    </form>
+        <a href="{% url 'chat:post' %}" class="btn btn-primary" id="more-post" style="display: none">Post More</a>
+        <br/><br/>
+
     <div class="row">
-    <p><a href="{% url 'chat:post' %}" class="btn btn-primary" role="button">Post something</a>
+     <h3 id="new-post"></h3>
     {% for post in posts %}
         {% post_filter post user friends as post_good %}
         {% if post_good %}
@@ -25,11 +77,11 @@
                     <p>{{ post.text|linebreaks|truncatechars:120 }}</p>
                     <p>{{ post.share }}</p>
 {#                    <p><a href="{% url 'chat:comment' pk=post.pk %}" class="btn btn-primary" role="button">Comment</a>#}
-                    <form method="POST" action="{% url 'chat:post_comment' pk=post.pk %}" enctype="multipart/form-data">
+                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' pk=post.pk %}" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <input type="text" name="text" placeholder="text" value="{{ request.GET.text }}" />
+                        <input type="text" name="text"  placeholder="text" value="{{ request.GET.text }}" />
                         <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}" />
-                        <input type="submit" class="btn btn-primary" value="Comment" />
+                        <input type="submit" class="btn btn-primary submit-comment" value="Comment" />
                     </form>
                     {% has_comments post 2 as comments %}
                     {% if comments %}

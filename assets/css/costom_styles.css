@@ -4,3 +4,11 @@
     border: 1px #db5dd5;
     border-radius: 10%;
 }
+
+.replies {
+    display: none;
+}
+
+.chocolate {
+    background: chocolate;
+}

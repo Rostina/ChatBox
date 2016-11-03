@@ -9,6 +9,8 @@ register = template.Library()
 def post_filter(post, user, friends):
     if post.share == 'Public' or post.user == user:
         return True
+    elif friends == False:
+        return False
     elif post.user.pk in friends:
         return True
     else:
