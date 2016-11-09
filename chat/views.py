@@ -161,8 +161,9 @@ def make_comments(request, pk):
 
 
 @login_required()
-def post_comment(request, pk):
+def post_comment(request):
     user = models.Profile.objects.get(username=request.user.username)
+    pk = request.POST.get("pk")
     post = get_object_or_404(models.Chat, pk=pk)
     form = forms.CommentForm(request.POST, request.FILES)
     # image = request.GET.get("image")
@@ -190,17 +191,20 @@ def post_comment(request, pk):
 
 @login_required()
 def chat_box_posts(request):
-    """"""
+    """ the main page"""
     user = models.Profile.objects.get(username=request.user.username)
     friends = friend_list(user)
     posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
     form = forms.ChatPostForm(request.POST, request.FILES or None)
     if form.is_valid():
         if request.is_ajax():
-            image = request.GET.get("image")
-            text = request.GET.get("text")
-            title = request.GET.get("title")
-            share = request.GET.get("share")
+            image = request.POST.get("image")
+            text = request.POST.get("text")
+            title = request.POST.get("title")
+            share = request.POST.get("share")
+            print(image)
+            print(text)
+
             i = False
             error = False
             if not image:

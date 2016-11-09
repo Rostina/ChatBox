@@ -28,7 +28,7 @@ class ChatPostForm(forms.ModelForm):
         text = cleaned_data.get('text')
 
         if not image and not text:
-            raise forms.ValidationError("Didnt work")
+            raise forms.ValidationError("You need to post an image or a text")
 
 
 class CommentForm(forms.ModelForm):
@@ -44,6 +44,10 @@ class CommentForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
+        image = cleaned_data.get('image')
+        text = cleaned_data.get('text')
+        if not image and not text:
+            raise forms.ValidationError("You need to post an image or a text")
 
 
 

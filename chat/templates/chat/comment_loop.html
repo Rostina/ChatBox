@@ -1,11 +1,44 @@
 {% load template_func %}
 
-<script>
+<script xmlns="http://www.w3.org/1999/html">
     {% block javascript %}
-        $(".show_replies").click(function() {
+        $(".show_replies").click(function () {
             var comment = $(this).next().val();
             $(this).next().css("display", "block");
+            $(this).css("display", "none");
             console.log("Went through");
+        });
+
+        $(".hide-replies").click(function () {
+            $(this).parent().css("display", "none");
+            $(this).parent().prev().css("display", "block");
+        });
+
+        $(".submit-comment").click(function (event) {
+            // event.preventDefault();
+            formData = {
+                image: $('#image').val(),
+                text: $('#text').val(),
+            };
+            {%  comment %}$.ajax({
+                type: $(this).attr('method'),
+                url: "{% url 'chat:chat' %}",
+                data: formData,
+                success: function(data) {
+                    if (formData.image) {
+                        alert("Need to reload");
+                        $("#post-form").submit();
+                    } else {
+                        alert("Went well");
+                        $("#new-post").text("NEW POST: '"+ formData.title + "'");
+                        $("#more-post").fadeIn();
+                        $("#post-form").fadeOut();
+                    }
+                },
+                error: function(response, error) {
+                    alert("Need to reload");
+                }
+            }){% endcomment %}
         });
     {% endblock %}
 </script>
@@ -20,21 +53,34 @@
     {% endif %}
     <p>{{ comment.text|linebreaks|truncatechars:120 }}</p>
     {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
-    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' pk=comment.pk %}" enctype="multipart/form-data">
+    <form class="form-inline comment-form" method="POST" action="{% url 'chat:post_comment' %}"
+          enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="text" name="text" placeholder="text" value="{{ request.GET.text }}"/>
-        <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}"/>
-        <input type="submit" class="btn btn-primary" class="submit-comment" value="Reply"/>
+        <div class="form-group"><input type="text" name="text" id="text" placeholder="text"
+                                       value="{{ request.GET.text }}"/>
+            <div class="hidden-items image-field">
+                <input type="file" name="image" placeholder="image" class="image" value="{{ request.GET.image }}"/>
+            </div>
+            <button class="btn-danger hidden-items image-link">X</button>
+            <button class="btn-info image-link" id="image-button">
+                <i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+            </button>
+            <input type="hidden" name="pk" id="pk" value="{{ comment.pk }}">
+            <input type="submit" class="btn btn-primary submit-comment" value="Reply"/></div>
     </form>
 
 
-    {% new_distance comment.distance_from_sourse as distance %}
-        {% has_comments comment distance as comments %}
-        {% if comments %}
 
-            <button class="show_replies">Show replies</button>
-            <div class="replies">
+    {% new_distance comment.distance_from_sourse as distance %}
+    {% has_comments comment distance as comments %}
+    {% if comments %}
+
+        <button class="btn-info show_replies">Show replies</button>
+
+
+        <div class="hidden-items">
+            <button class="btn-success hide-replies">Hide replies</button>
             {% comments_list comments %}
-            </div>
-        {% endif %}
+        </div>
+    {% endif %}
 {% endfor %}

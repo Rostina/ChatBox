@@ -4,25 +4,71 @@
 
 <script>
     {% block javascript %}
-        $("#submit-post").click(function (event) {
-            event.preventDefault();
+        $(function() {
+            var image;
+            $(".image-link").click(function (event) {
+                //  TODO: fix 2 bugs 1)only show more one file input
+                // TODO: 2) when press X on file with nothing doesnt let you open two at same time
+                event.preventDefault();
+
+                if ($(this).next().hasClass("image-link") === true) {
+                    // meaning X button was pressed
+                    alert("X was pressed");
+                    $(this).css("display", "none");
+                    image = $(this).siblings('.image-field').children('.image').detach();
+                    if (image) {
+                        alert("Its saved for now");
+                    }
+                    // $(this).siblings('.hidden-items').css("display", "none");
+                    $(this).siblings("#image-button").css("display", "inline");
+                } else {
+                    // meaning camera button was pressed
+                    if (image) {
+                        alert("image is saved");
+                        image.appendTo($(this).siblings(".image-field"));
+                        image = null;
+                    }
+                    $(this).siblings('.hidden-items').css("display", "inline");
+                    $(this).next(type = "hidden").submit();
+                    $(this).css("display", "none")
+                }
+
+
+            });
+        });
+
+        $(function() {
+            $(".remove-picture").click(function(event) {
+                event.preventDefault();
+                alert("Went well");
+                $(this).css("display", "none");
+                $(this).prev('.image').detach();
+                $(this).prev('.image').css("display", "none");
+                $(this).offsetParent().siblings(".image-link").css("display", "inline");
+            });
+        });
+
+
+
+        $("#submit-post").click(function() {
+            // event.preventDefault();
             formData = {
                 image: $('#id_image').val(),
                 text: $('#id_text').val(),
                 title: $("#id_title").val(),
                 share: $("#id_share").val()
             };
-            $.ajax({
+            {% comment %}$.ajax({
                 type: $(this).attr('method'),
                 url: "{% url 'chat:chat' %}",
                 data: formData,
                 success: function(data) {
-                    if (data.image == true) {
+                    if (formData.image) {
                         alert("Need to reload");
                         $("#post-form").submit();
                     } else {
                         alert("Went well");
-                        $("#new-post").text("NEW POST: '"+ data.post + "'");
+                        $("#new-post").text("NEW POST: '"+ formData.title + "'");
                         $("#more-post").fadeIn();
                         $("#post-form").fadeOut();
                     }
@@ -30,7 +76,7 @@
                 error: function(response, error) {
                     alert("Need to reload");
                 }
-            })
+            }){% endcomment %}
         });
     {% endblock %}
 </script>
@@ -56,7 +102,7 @@
         {% csrf_token %}
         <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
     </form>
-        <a href="{% url 'chat:post' %}" class="btn btn-primary" id="more-post" style="display: none">Post More</a>
+        <a href="{% url 'chat:chat' %}" class="btn btn-primary" id="more-post" style="display: none">Post More</a>
         <br/><br/>
 
     <div class="row">
@@ -70,18 +116,29 @@
                 <div class="caption">
 
                     <h3><img src="{{ post.user.picture.url }}" class="profile_pic" />
-                        {%  if post.title != "Post" %}Title: {% endif %}{{ post.title }} from {{ post.user }} <small>{{ post.time_posted|timesince }} ago</small></h3>
+                        {{ post.title }}
+                        <small> from {{ post.user }} {{ post.time_posted|timesince }} ago</small>
+                    </h3>
                     {% if post.image %}
                         <img src="{{ post.image.url }}" class="img-responsive" />
                     {% endif %}
-                    <p>{{ post.text|linebreaks|truncatechars:120 }}</p>
-                    <p>{{ post.share }}</p>
+                    <p class="post-text" style="">{{ post.text|linebreaks }}</p>
+                    <p><small>{{ post.share }}</small></p>
 {#                    <p><a href="{% url 'chat:comment' pk=post.pk %}" class="btn btn-primary" role="button">Comment</a>#}
-                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' pk=post.pk %}" enctype="multipart/form-data">
+
+                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' %}" enctype="multipart/form-data">
                         {% csrf_token %}
-                        <input type="text" name="text"  placeholder="text" value="{{ request.GET.text }}" />
-                        <input type="file" name="image" placeholder="image" value="{{ request.GET.image }}" />
-                        <input type="submit" class="btn btn-primary submit-comment" value="Comment" />
+                        <div class="form-group"><input type="text" name="text"  placeholder="text" value="{{ request.GET.text }}" />
+
+                        <div class="hidden-items image-field">
+                            <input type="file" name="image" placeholder="image" class="image" value="{{ request.GET.image }}" />
+
+                        </div>
+                        <button class="btn-danger hidden-items image-link">X</button>
+                        <button class="btn-info image-link" id="image-button"><i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i></button>
+                        <input type="hidden" name="pk" value="{{ post.pk }}">
+
+                        <input type="submit" class="btn btn-primary submit-comment" value="Comment" /></div>
                     </form>
                     {% has_comments post 2 as comments %}
                     {% if comments %}

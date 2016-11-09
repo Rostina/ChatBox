@@ -46,7 +46,7 @@ class Chat(models.Model):
     SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
     comment = models.ForeignKey('self', null=True, blank=True, default=None)
     distance_from_sourse = models.PositiveIntegerField(default=1)
-    title = models.CharField(max_length=25, default="Post", null=True, blank=True)
+    title = models.CharField(max_length=125, default="Post", null=True, blank=True)
     image = models.ImageField(upload_to='images',
                               null=True, blank=True)
     text =  models.TextField(null=True, blank=True)

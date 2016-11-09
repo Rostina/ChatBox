@@ -38,3 +38,23 @@ function showFlashMessage(message) {
         $(".container-alert-flash").fadeOut();
     }, 1800)
 }
+
+$(document).ready(function () {
+    $(".remove-picture").click(function(event) {
+        $(this).css("display", "none");
+        event.preventDefault();
+        $(this).prev('.image').remove();
+        $(this).prev('.image').css("display", "none");
+        $(this).siblings(".image-link").css("display", "inline")
+    });
+
+    $(".image-link").click(function(event) {
+        // make it that when click on image-link it automatically brings up image choice
+        // and not show defoult
+        event.preventDefault();
+        $(this).next().css("display", "inline");
+        $(this).css("display", "none");
+    });
+
+
+});
