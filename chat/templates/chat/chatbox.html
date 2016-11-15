@@ -7,26 +7,24 @@
         $(function() {
             var image;
             $(".image-link").click(function (event) {
-                //  TODO: fix 2 bugs 1)only show more one file input
-                // TODO: 2) when press X on file with nothing doesnt let you open two at same time
                 event.preventDefault();
-
+                var pk = $(this).next(type="hidden");
                 if ($(this).next().hasClass("image-link") === true) {
                     // meaning X button was pressed
-                    alert("X was pressed");
                     $(this).css("display", "none");
                     image = $(this).siblings('.image-field').children('.image').detach();
                     if (image) {
-                        alert("Its saved for now");
                     }
                     // $(this).siblings('.hidden-items').css("display", "none");
                     $(this).siblings("#image-button").css("display", "inline");
                 } else {
                     // meaning camera button was pressed
                     if (image) {
-                        alert("image is saved");
                         image.appendTo($(this).siblings(".image-field"));
                         image = null;
+                    } else {
+
+                        $(this).siblings(".image-field").append("<input type='file' name='image' placeholder='image' class='image' />");
                     }
                     $(this).siblings('.hidden-items').css("display", "inline");
                     $(this).next(type = "hidden").submit();
@@ -36,19 +34,6 @@
 
             });
         });
-
-        $(function() {
-            $(".remove-picture").click(function(event) {
-                event.preventDefault();
-                alert("Went well");
-                $(this).css("display", "none");
-                $(this).prev('.image').detach();
-                $(this).prev('.image').css("display", "none");
-                $(this).offsetParent().siblings(".image-link").css("display", "inline");
-            });
-        });
-
-
 
         $("#submit-post").click(function() {
             // event.preventDefault();
@@ -130,8 +115,8 @@
                         {% csrf_token %}
                         <div class="form-group"><input type="text" name="text"  placeholder="text" value="{{ request.GET.text }}" />
 
-                        <div class="hidden-items image-field">
-                            <input type="file" name="image" placeholder="image" class="image" value="{{ request.GET.image }}" />
+                        <div class="image-field">
+
 
                         </div>
                         <button class="btn-danger hidden-items image-link">X</button>

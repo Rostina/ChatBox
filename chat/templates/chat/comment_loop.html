@@ -58,8 +58,8 @@
         {% csrf_token %}
         <div class="form-group"><input type="text" name="text" id="text" placeholder="text"
                                        value="{{ request.GET.text }}"/>
-            <div class="hidden-items image-field">
-                <input type="file" name="image" placeholder="image" class="image" value="{{ request.GET.image }}"/>
+            <div class="image-field">
+
             </div>
             <button class="btn-danger hidden-items image-link">X</button>
             <button class="btn-info image-link" id="image-button">
