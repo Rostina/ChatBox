@@ -125,7 +125,7 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
-    os.path.join(SITE_ROOT, 'staticfiles'),
+    os.path.join(SITE_ROOT, 'assets'),
 )
 
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")

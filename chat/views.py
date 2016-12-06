@@ -164,17 +164,24 @@ def make_comments(request, pk):
 def post_comment(request):
     user = models.Profile.objects.get(username=request.user.username)
     pk = request.POST.get("pk")
+    print(pk)
     post = get_object_or_404(models.Chat, pk=pk)
     form = forms.CommentForm(request.POST, request.FILES)
+    print(form)
     # image = request.GET.get("image")
     # text = request.GET.get("text")
     if form.is_valid():
+        print("FOrm is valid")
         comment = form.save(commit=False)
         comment.user = user
         comment.share = "Public"
         comment.comment = post
         comment.distance_from_sourse = post.distance_from_sourse + 1
+        print(comment.distance_from_sourse)
         comment.save()
+        print("Comment is saved")
+        print(comment.pk)
+        print(comment.image)
         """models.Chat.objects.create(
             comment=post,
             distance_from_sourse=post.distance_from_sourse + 1,

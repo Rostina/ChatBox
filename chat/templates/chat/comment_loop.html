@@ -1,6 +1,6 @@
 {% load template_func %}
 
-<script xmlns="http://www.w3.org/1999/html">
+<script>
     {% block javascript %}
         $(".show_replies").click(function () {
             var comment = $(this).next().val();
@@ -12,75 +12,71 @@
         $(".hide-replies").click(function () {
             $(this).parent().css("display", "none");
             $(this).parent().prev().css("display", "block");
+            console.log("replies hidden");
         });
 
-        $(".submit-comment").click(function (event) {
-            // event.preventDefault();
-            formData = {
-                image: $('#image').val(),
-                text: $('#text').val(),
-            };
-            {%  comment %}$.ajax({
-                type: $(this).attr('method'),
-                url: "{% url 'chat:chat' %}",
-                data: formData,
-                success: function(data) {
-                    if (formData.image) {
-                        alert("Need to reload");
-                        $("#post-form").submit();
-                    } else {
-                        alert("Went well");
-                        $("#new-post").text("NEW POST: '"+ formData.title + "'");
-                        $("#more-post").fadeIn();
-                        $("#post-form").fadeOut();
-                    }
-                },
-                error: function(response, error) {
-                    alert("Need to reload");
-                }
-            }){% endcomment %}
-        });
+
+
+
+        var nuzz= "";
+        {% for comment in comments|slice:"1" %}
+            nuzz = "{{ comment.distance_from_sourse }}";
+        {% endfor %}
+        var index = (10 * parseInt(nuzz)) - 10;
+        $(".iii").css("padding-left", index +"%").css("color", "blue");
+
+
     {% endblock %}
 </script>
 
-{% for comment in comments %}
-    <h3><img src="{{ comment.user.picture.url }}" class="profile_pic"/>
-        {{ comment.user }}
-        <small>{{ comment.time_posted|timesince }} ago</small>
-    </h3>
-    {% if comment.image %}
-        <img src="{{ comment.image.url }}" class="img-responsive"/>
-    {% endif %}
-    <p>{{ comment.text|linebreaks|truncatechars:120 }}</p>
-    {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
-    <form class="form-inline comment-form" method="POST" action="{% url 'chat:post_comment' %}"
-          enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="form-group"><input type="text" name="text" id="text" placeholder="text"
-                                       value="{{ request.GET.text }}"/>
-            <div class="image-field">
+{% block css %}
+    <style>
 
+    </style>
+{% endblock %}
+
+{% for comment in comments %}
+    <div class="iii">
+        <p><img src="{{ comment.user.picture.url }}" class="profile_pic"/>
+            <a href="" class="name">{{ comment.user }}</a> {{ comment.text }}
+            {% if not comment.image %}
+                <button class="reply">Reply</button>
+            {% endif %}
+        </p>
+        {% if comment.image %}
+            <img src="{{ comment.image.url }}" class="img-responsive"/>
+            <p><button class="reply">Reply</button></p>
+        {% endif %}
+        {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
+        <form class="form-inline comment-form reply-form" method="POST" action="{% url 'chat:post_comment' %}"
+              enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+            <input type="text" name="text" id="text" placeholder="text"
+                   value="{{ request.GET.text }}"/>
+            <div class="image-field">
+                {# // image input goes here added in jquery when press the camera button #}
             </div>
             <button class="btn-danger hidden-items image-link">X</button>
             <button class="btn-info image-link" id="image-button">
                 <i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
             </button>
             <input type="hidden" name="pk" id="pk" value="{{ comment.pk }}">
-            <input type="submit" class="btn btn-primary submit-comment" value="Reply"/></div>
-    </form>
+            <input type="submit" class="btn btn-primary submit-comment" value="Reply"/>
+        </form>
 
 
 
-    {% new_distance comment.distance_from_sourse as distance %}
-    {% has_comments comment distance as comments %}
-    {% if comments %}
+        {% new_distance comment.distance_from_sourse as distance %}
+        {% has_comments comment distance as comments %}
+        {% if comments %}
 
-        <button class="btn-info show_replies">Show replies</button>
+            <button class="btn-info show_replies">Show replies</button>
 
 
-        <div class="hidden-items">
-            <button class="btn-success hide-replies">Hide replies</button>
-            {% comments_list comments %}
-        </div>
-    {% endif %}
+            <div class="hidden-items">
+                <button class="btn-success hide-replies">Hide replies</button>
+                {% comments_list comments %}
+            </div>
+        {% endif %}
+    </div>
 {% endfor %}

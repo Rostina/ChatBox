@@ -4,11 +4,12 @@
 
 <script>
     {% block javascript %}
-        $(function() {
+        // TODO: make ajax not accept if data is empty
+        $(function () {
             var image;
             $(".image-link").click(function (event) {
                 event.preventDefault();
-                var pk = $(this).next(type="hidden");
+                var pk = $(this).next(type = "hidden");
                 if ($(this).next().hasClass("image-link") === true) {
                     // meaning X button was pressed
                     $(this).css("display", "none");
@@ -24,7 +25,7 @@
                         image = null;
                     } else {
 
-                        $(this).siblings(".image-field").append("<input type='file' name='image' placeholder='image' class='image' />");
+                        $(this).siblings(".image-field").append("<input type='file' name='image' id='image' placeholder='image' class='image' />");
                     }
                     $(this).siblings('.hidden-items').css("display", "inline");
                     $(this).next(type = "hidden").submit();
@@ -35,109 +36,131 @@
             });
         });
 
-        $("#submit-post").click(function() {
-            // event.preventDefault();
-            formData = {
-                image: $('#id_image').val(),
-                text: $('#id_text').val(),
-                title: $("#id_title").val(),
-                share: $("#id_share").val()
-            };
-            {% comment %}$.ajax({
-                type: $(this).attr('method'),
-                url: "{% url 'chat:chat' %}",
-                data: formData,
-                success: function(data) {
-                    if (formData.image) {
-                        alert("Need to reload");
-                        $("#post-form").submit();
-                    } else {
-                        alert("Went well");
-                        $("#new-post").text("NEW POST: '"+ formData.title + "'");
-                        $("#more-post").fadeIn();
-                        $("#post-form").fadeOut();
+        $(".submit-comment").click(function (event) {
+            event.preventDefault();
+            var formData = $(this).parent(".comment-form").serializeArray();
+            var image = $(this).siblings('.image-field').children("#image").val();
+            var text = $(this).siblings("#text").val();
+            // formData.append("image", $(this).siblings('.image-field').children("#image").val());
+            //formData.append("text", $(this).siblings("#text").val());
+            //formData.append("pk", $(this).siblings("#pk").val());
+            //};
+            console.log(formData);
+            if (image) {
+                alert("Need to reload to be able to save image");
+                $(this).parent(".comment-form").submit();
+
+            } else if (text === "") {
+                alert("Post not posted. Add a picture or a post");
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'chat:post_comment' %}",
+                    data: formData,
+                    success: function (data) {
+                        alert("Comment Added!");
+                        var newPost = '<h3><img src="{{ user }}" class="profile_pic"/>{{ user }}';
+                        newPost += '<small>{{ comment.time_posted|timesince }} ago</small></h3>';
+                        newPost += '<p>' + data + '</p>';
+                        $(this).parent("#new-post").html(newPost);
+
+                    },
+                    error: function (error) {
+                        console.log(error.status + ": " + error.statusText);
+                        $(this).parent(".comment-form").submit();
                     }
-                },
-                error: function(response, error) {
-                    alert("Need to reload");
-                }
-            }){% endcomment %}
+                });
+                $(this).parents(".comment-form").siblings("p").children(".reply").css("display", "inline");
+                $(this).parents(".comment-form").css("display", "none");
+            }
+        });
+        $(".name").css("font-weight", "bold");
+
+        $(".reply").click(function() {
+            $(this).parents().siblings(".comment-form").css("display", "inline");
+            $(this).hide();
+            console.log("Reply form revealed");
         });
     {% endblock %}
+
 </script>
 
 {% block title %}ChatBox{% endblock %}
 
 {% block content %}
-    <div class="col-sm-6 col-sm-offset-3">
+    <div class="col-sm-8 col-sm-offset-3">
 
-   {% comment %}     <form action="{% url 'chat:fast_post' %}" method="POST" enctype="multipart/form-data">
-            <input type="text" name="title">
-            <input type="text" name="text">
-            Share with: <input type="radio" name="share" value="Public">Public
-            <input type="radio" name="share" value="Friends">Friends
+        <form id="post-form" method="POST" action="" enctype="multipart/form-data">
+            <p id="title">{{ form.title }}</p>
+            <p id="image">{{ form.image }}</p>
+            <p id="text">{{ form.text }}</p>
+            <p id="share">{{ form.share }}</p>
             {% csrf_token %}
-            <input type="submit" value="post" class="button-form">
-        </form>{% endcomment %}
-     <form id="post-form" method="POST" action="" enctype="multipart/form-data">
-        <p  id="title">{{ form.title }}</p>
-        <p id="image">{{ form.image }}</p>
-        <p id="text">{{ form.text }}</p>
-        <p id="share">{{ form.share }}</p>
-        {% csrf_token %}
-        <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
-    </form>
+            <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
+        </form>
         <a href="{% url 'chat:chat' %}" class="btn btn-primary" id="more-post" style="display: none">Post More</a>
         <br/><br/>
 
-    <div class="row">
-     <h3 id="new-post"></h3>
-    {% for post in posts %}
-        {% post_filter post user friends as post_good %}
-        {% if post_good %}
         <div class="row">
-        <div class="col-sm-12">
-            <div class="thumbnail">
-                <div class="caption">
+            <h3 id="new-post"></h3>
+            {% for post in posts %}
+                {% post_filter post user friends as post_good %}
+                {% if post_good %}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="thumbnail">
+                                <div class="caption">
 
-                    <h3><img src="{{ post.user.picture.url }}" class="profile_pic" />
-                        {{ post.title }}
-                        <small> from {{ post.user }} {{ post.time_posted|timesince }} ago</small>
-                    </h3>
-                    {% if post.image %}
-                        <img src="{{ post.image.url }}" class="img-responsive" />
-                    {% endif %}
-                    <p class="post-text" style="">{{ post.text|linebreaks }}</p>
-                    <p><small>{{ post.share }}</small></p>
-{#                    <p><a href="{% url 'chat:comment' pk=post.pk %}" class="btn btn-primary" role="button">Comment</a>#}
+                                    <h3>
+                                        <img src="{{ post.user.picture.url }}" class="profile_pic"/>
+                                        {{ post.title }}
+                                        <small> from <a href="" class="name">{{ post.user }}</a>
+                                            {{ post.time_posted|timesince }} ago
+                                        </small>
 
-                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' %}" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <div class="form-group"><input type="text" name="text"  placeholder="text" value="{{ request.GET.text }}" />
+                                    </h3>
+                                    {% if post.image %}
+                                        <img src="{{ post.image.url }}" class="img-responsive"/>
+                                    {% endif %}
+                                    <p class="post-text" style="">{{ post.text|linebreaks }}</p>
+                                    <p>
+                                        <small>{{ post.share }}</small>
+                                        <button class="reply" style="display: none;">Reply</button>
+                                    </p>
+                                    {#                    <p><a href="{% url 'chat:comment' pk=post.pk %}" class="btn btn-primary" role="button">Comment</a>#}
 
-                        <div class="image-field">
+                                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' %}"
+                                          enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        {#                        <div class="form-group">#}
+                                        <input type="text" name="text" id="text" placeholder="text"
+                                               value="{{ request.GET.text }}"/>
 
+                                        <div class="image-field">
+                                            {# // where image input will be placed in jquery code#}
+                                        </div>
+                                        <button class="btn-danger hidden-items image-link">X</button>
+                                        <button class="btn-info image-link" id="image-button"><i
+                                                class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+                                        </button>
+                                        <input type="hidden" id="pk" name="pk" value="{{ post.pk }}">
 
+                                        <input type="submit" class="btn btn-primary submit-comment" value="Comment"/>
+
+                                    </form>
+                                    <div id="new-post"></div>
+                                    {% has_comments post 2 as comments %}
+                                    {% if comments %}
+                                        {% comments_list comments %}
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        <button class="btn-danger hidden-items image-link">X</button>
-                        <button class="btn-info image-link" id="image-button"><i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i></button>
-                        <input type="hidden" name="pk" value="{{ post.pk }}">
+                    </div>
+                {% endif %}
+            {% endfor %}
 
-                        <input type="submit" class="btn btn-primary submit-comment" value="Comment" /></div>
-                    </form>
-                    {% has_comments post 2 as comments %}
-                    {% if comments %}
-                        {% comments_list comments %}
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        <hr/>
-        </div>
-        {% endif %}
-    {% endfor %}
-
-        <div class="pagination">
+            <div class="pagination">
     <span class="step-links">
         {% if posts.has_previous %}
             <a href="?page={{ posts.previous_page_number }}">previous</a>
@@ -151,7 +174,7 @@
             <a href="?page={{ posts.next_page_number }}">next</a>
         {% endif %}
     </span>
-    </div>
-    </div>
+            </div>
+        </div>
     </div>
 {% endblock %}
