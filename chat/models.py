@@ -46,12 +46,19 @@ class Chat(models.Model):
     SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
     comment = models.ForeignKey('self', null=True, blank=True, default=None)
     distance_from_sourse = models.PositiveIntegerField(default=1)
-    title = models.CharField(max_length=125, default="Post", null=True, blank=True)
+    likes = models.CharField(
+        max_length=100000,
+        default="",
+        validators=[validate_comma_separated_integer_list]
+    )
+    amount_likes = models.IntegerField(default=0)
+    title = models.CharField(max_length=400, default="Post", null=True, blank=True)
     image = models.ImageField(upload_to='images',
                               null=True, blank=True)
     text =  models.TextField(null=True, blank=True)
     share = models.CharField(max_length=50, choices=SHARINGCHOICES)
-    user = models.ForeignKey(Profile)
+    user = models.ForeignKey(Profile, related_name='user')
+    users = models.ManyToManyField(Profile, null=True, related_name='users')
     time_posted = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
@@ -65,6 +72,7 @@ class Chat(models.Model):
     def clean(self):
         if self.comment == self:
             raise ValidationError("a chat cant be a comment on its self")
+
 
 
 

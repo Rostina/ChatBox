@@ -7,6 +7,9 @@ register = template.Library()
 
 @register.assignment_tag()
 def post_filter(post, user, friends):
+    for sharer in post.users.all():
+        if sharer.id in friends:
+            return True
     if post.share == 'Public' or post.user == user:
         return True
     elif friends == False:
@@ -15,6 +18,17 @@ def post_filter(post, user, friends):
         return True
     else:
         return False
+
+
+@register.assignment_tag()
+def share_button_filter(post, user):
+    if post.share == 'Public' or post.user == user:
+        return False
+    for sharer in post.users.all():
+        if sharer == user:
+            return False
+    return True
+
 
 
 @register.assignment_tag()

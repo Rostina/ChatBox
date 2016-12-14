@@ -1,0 +1,87 @@
+{% load staticfiles %}
+
+<script>
+$(document).ready(function () {
+    $(".submit-comment").click(function (event) {
+        event.preventDefault();
+        var formData = $(this).parent(".comment-form").serializeArray();
+        var image = $(this).siblings('.image-field').children("#image").val();
+        var text = $(this).siblings("#text").val();
+        console.log(formData);
+        if (image) {
+            alert("Need to reload to be able to save image");
+            $(this).parent(".comment-form").submit();
+
+        } else if (text === "") {
+            alert("Post not posted. Add a picture or a post");
+        } else {
+            $.ajax({
+                type: "POST",
+                url: "{% url 'chat:post_comment' %}",
+                data: formData,
+                success: function (data) {
+                    alert("Comment Added!");
+                    var newPost = '<h3><img src="{{ user }}" class="profile_pic"/>{{ user }}';
+                    newPost += '<small>{{ comment.time_posted|timesince }} ago</small></h3> ';
+                    newPost += '<p>' + data + '</p>';
+                    $(this).parent("#new-post").html(newPost);
+
+                },
+                error: function (error) {
+                    console.log(error.status + ": " + error.statusText);
+                    $(this).parent(".comment-form").submit();
+                }
+            });
+            $(this).parents(".comment-form").siblings("p").children(".reply").css("display", "inline");
+            $(this).parents(".comment-form").css("display", "none");
+        }
+    });
+
+    $(".like-unlike-form").submit(function (event) {
+        event.preventDefault();
+        var data = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "{% url 'chat:like/unlike' %}",
+            success: function (data) {
+                alert("This is a flash message: " + data.flash_message);
+                showFlashMessage(data.flash_message);
+                if (data.likes > 0) {
+                    $("#like-form-" + data.post_pk).siblings(".likes").css("display", "inline").text(data.likes + " likes");
+                } else {
+                    $("#like-form-" + data.post_pk).siblings(".likes").css("display", "none");
+                }
+            },
+            error: function (error) {
+                alert("didn't work");
+                $(".like-unlike-form").submit();
+            }
+        })
+    });
+
+    $('.share-form').submit(function (event) {
+        event.preventDefault();
+        var data = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            data: data,
+            url: "{% url 'chat:share' %}",
+            success: function (data) {
+                alert("Shared");
+                $("#share-form-" + data.pk).css("display", "none");
+                var newText = "<h5>";
+                newText += '<img src="{{ user.picture.url }}" class="profile_pic"/>';
+                newText += '<a href="" class="name">{{ user }}</a> shared <strong>' + data.postTitle.title + '</strong>';
+                newText += "</h5>";
+                alert(newText);
+                $("#new-ajax-sharer-" + data.pk).html(newText);
+            },
+            error: function (error) {
+                alert(error.status + ": " + error.statusText);
+                $("#share-form").submit();
+            }
+        });
+    });
+});
+</script>

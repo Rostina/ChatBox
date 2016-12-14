@@ -1,6 +1,6 @@
 .profile_pic {
-    width: 5px;
-    height:5px;
+    width: 50px;
+    height:50px;
     border: 1px;
     background-color: darkred;
     border-radius: 10%;
@@ -8,6 +8,10 @@
 
 .hidden-items {
     display: none;
+}
+
+.name {
+    font-weight: bold;
 }
 
 .chocolate {

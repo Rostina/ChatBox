@@ -2,38 +2,14 @@
 
 <script>
     {% block javascript %}
-        $(".show_replies").click(function () {
-            var comment = $(this).next().val();
-            $(this).next().css("display", "block");
-            $(this).css("display", "none");
-            console.log("Went through");
-        });
-
-        $(".hide-replies").click(function () {
-            $(this).parent().css("display", "none");
-            $(this).parent().prev().css("display", "block");
-            console.log("replies hidden");
-        });
-
-
-
-
         var nuzz= "";
         {% for comment in comments|slice:"1" %}
             nuzz = "{{ comment.distance_from_sourse }}";
         {% endfor %}
         var index = (10 * parseInt(nuzz)) - 10;
-        $(".iii").css("padding-left", index +"%").css("color", "blue");
-
-
+        $(".iii").css("padding-left", index +"%");
     {% endblock %}
 </script>
-
-{% block css %}
-    <style>
-
-    </style>
-{% endblock %}
 
 {% for comment in comments %}
     <div class="iii">
@@ -41,11 +17,23 @@
             <a href="" class="name">{{ comment.user }}</a> {{ comment.text }}
             {% if not comment.image %}
                 <button class="reply">Reply</button>
+                <form method="post" class="like-unlike-form" id="likes-form-{{ comment.pk }}" action="{% url 'chat:like/unlike' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="pk" value="{{ comment.pk }}">
+                    <input type="submit" value="Like/unlike">
+                </form>
             {% endif %}
         </p>
         {% if comment.image %}
             <img src="{{ comment.image.url }}" class="img-responsive"/>
-            <p><button class="reply">Reply</button></p>
+            <p>
+                <form method="post" class="like-unlike-form" id="likes-form-{{ comment.pk }}" action="{% url 'chat:like/unlike' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="pk" value="{{ comment.pk }}">
+                    <input type="submit" value="Like/unlike">
+                </form>
+                <button class="reply">Reply</button>
+            </p>
         {% endif %}
         {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
         <form class="form-inline comment-form reply-form" method="POST" action="{% url 'chat:post_comment' %}"
