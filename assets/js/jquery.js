@@ -16,6 +16,8 @@ $(document).ready(function () {
             $(".container-alert-flash").fadeOut();
         }, 1800)
     }
+    
+    
 
     $(function () {
         // shows images
@@ -50,6 +52,7 @@ $(document).ready(function () {
     });
 
     $(".reply").click(function () {
+        // reveals form to reply to post
         $(this).parents().siblings(".comment-form").css("display", "inline");
         $(this).hide();
         console.log("Reply form revealed");

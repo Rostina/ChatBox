@@ -7,6 +7,7 @@
 
 $(document).ready(function () {
     $(function () {
+        // function of  image button
         var image;
         $(".image-link").click(function (event) {
             event.preventDefault();
@@ -38,6 +39,7 @@ $(document).ready(function () {
     });
 
     $(".submit-comment").click(function (event) {
+        // submits comment
         event.preventDefault();
         var formData = $(this).parent(".comment-form").serializeArray();
         var image = $(this).siblings('.image-field').children("#image").val();

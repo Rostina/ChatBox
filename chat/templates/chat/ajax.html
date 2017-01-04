@@ -1,10 +1,10 @@
 {% load staticfiles %}
 
 <script>
-$(document).ready(function () {
+    $(document).ready(function() {
     $(".submit-comment").click(function (event) {
         event.preventDefault();
-        var formData = $(this).parent(".comment-form").serializeArray();
+        var formData = $(this).parent(".comment-form").serialize();
         var image = $(this).siblings('.image-field').children("#image").val();
         var text = $(this).siblings("#text").val();
         console.log(formData);
@@ -21,23 +21,24 @@ $(document).ready(function () {
                 data: formData,
                 success: function (data) {
                     alert("Comment Added!");
-                    var newPost = '<h3><img src="{{ user }}" class="profile_pic"/>{{ user }}';
-                    newPost += '<small>{{ comment.time_posted|timesince }} ago</small></h3> ';
-                    newPost += '<p>' + data + '</p>';
-                    $(this).parent("#new-post").html(newPost);
-
+                    var newPost = '<p><img src="{{ user.picture.url }}" class="profile_pic"/> ';
+                    newPost += '<a href="" class="name">{{ user }}</a>';
+                    newPost += ' ' + data.comment +'</p>';
+                    $("#new-post-"+data.pk).html(newPost);
+                    // $("#comment-form-"+data.pk).siblings("p").children(".reply").css("display", "inline");
+                    $("#comment-form-"+data.pk).css("display", "none");
                 },
                 error: function (error) {
-                    console.log(error.status + ": " + error.statusText);
+                    alert(error.status + ": " + error.statusText);
                     $(this).parent(".comment-form").submit();
                 }
             });
-            $(this).parents(".comment-form").siblings("p").children(".reply").css("display", "inline");
-            $(this).parents(".comment-form").css("display", "none");
+
         }
     });
 
     $(".like-unlike-form").submit(function (event) {
+        // likes and likes posts
         event.preventDefault();
         var data = $(this).serialize();
         $.ajax({
@@ -46,21 +47,23 @@ $(document).ready(function () {
             url: "{% url 'chat:like/unlike' %}",
             success: function (data) {
                 alert("This is a flash message: " + data.flash_message);
-                showFlashMessage(data.flash_message);
                 if (data.likes > 0) {
-                    $("#like-form-" + data.post_pk).siblings(".likes").css("display", "inline").text(data.likes + " likes");
+                    console.log(data.post_pk + '  ' + data.likes);
+                    $("#like-form-"+data.post_pk).siblings(".likes").css("display", "inline").text(data.likes + " likes");
                 } else {
-                    $("#like-form-" + data.post_pk).siblings(".likes").css("display", "none");
+                    $("#like-form-"+data.post_pk).siblings(".likes").text("");
                 }
             },
             error: function (error) {
                 alert("didn't work");
-                $(".like-unlike-form").submit();
+                console.log(error.status + ": " + error.statusText);
+                // $(".like-unlike-form").submit();       This will recall this function again and again making a never ending loop
             }
         })
     });
 
     $('.share-form').submit(function (event) {
+        // s ahres the post
         event.preventDefault();
         var data = $(this).serialize();
         $.ajax({
@@ -69,19 +72,19 @@ $(document).ready(function () {
             url: "{% url 'chat:share' %}",
             success: function (data) {
                 alert("Shared");
-                $("#share-form-" + data.pk).css("display", "none");
+                $("#share-form-" + data.post_pk).css("display", "none");
                 var newText = "<h5>";
                 newText += '<img src="{{ user.picture.url }}" class="profile_pic"/>';
-                newText += '<a href="" class="name">{{ user }}</a> shared <strong>' + data.postTitle.title + '</strong>';
+                newText += '<a href="" class="name">{{ user }}</a> shared <strong>' + data.post_title + '</strong>';
                 newText += "</h5>";
                 alert(newText);
-                $("#new-ajax-sharer-" + data.pk).html(newText);
+                $("#new-ajax-sharer-" + data.post_pk).html(newText);
             },
             error: function (error) {
                 alert(error.status + ": " + error.statusText);
-                $("#share-form").submit();
+                // $(".share-form").submit();
             }
         });
     });
-});
+    });
 </script>

@@ -2,41 +2,78 @@
 
 <script>
     {% block javascript %}
-        var nuzz= "";
+        var nuzz = "";
+        //var amount = $(this).next().val();
+        //amount -= 5;
         {% for comment in comments|slice:"1" %}
             nuzz = "{{ comment.distance_from_sourse }}";
         {% endfor %}
         var index = (10 * parseInt(nuzz)) - 10;
-        $(".iii").css("padding-left", index +"%");
+        $(".iii").css("padding-left", index + "%");
+
+        $(".like-button").click(function() {
+            console.log("like button pressed");
+            $(this).parent().siblings('.like-unlike-form').submit();
+        });
+
+        $(".like").hover(function() {
+            var likes = $(this).siblings(".like-amount").val();
+            if ($(this).parent().siblings(".likes").css("display", "hidden") && likes > 0) {
+                $(this).parent().siblings(".likes").css("display", "inline");
+            }
+        });
+
+        $(".more-comments").click(function() {
+            // TODO: Fix bug that the button reveals comments on the post below it
+            // TODO: Implement that button only reveals the next 10 comments and than 10 after
+            {% for comment in comments %}
+                $("#iii-"+{{ comment.pk }}).css("display", "block").css("padding-left", index + "%");
+            {% endfor %}
+            $(this).hide();
+        });
     {% endblock %}
 </script>
 
+{% last_5_comments comments as last_5 %}
+{% if comments|length > 5 %}
+    <button class="btn-warning more-comments">{{ comments|length }} More Comments</button>
+    <input type="hidden" class="length" value="{{ comments|length }}">
+    <input type="hidden" class="length2" value="{{ comments|length }}">
+{% endif %}
 {% for comment in comments %}
-    <div class="iii">
-        <p><img src="{{ comment.user.picture.url }}" class="profile_pic"/>
+    <div class="iii" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none"{% endif %}>
+        <input type="hidden" class="iii-pk" value="{{ comment.pk }}">
+    <div class="post">
+
+        <p>
+            <img src="{{ comment.user.picture.url }}" class="profile_pic"/>
             <a href="" class="name">{{ comment.user }}</a> {{ comment.text }}
             {% if not comment.image %}
                 <button class="reply">Reply</button>
-                <form method="post" class="like-unlike-form" id="likes-form-{{ comment.pk }}" action="{% url 'chat:like/unlike' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="pk" value="{{ comment.pk }}">
-                    <input type="submit" value="Like/unlike">
-                </form>
+{#                <button class="like-button">Like/Unlike</button>#}
+
             {% endif %}
         </p>
         {% if comment.image %}
             <img src="{{ comment.image.url }}" class="img-responsive"/>
             <p>
-                <form method="post" class="like-unlike-form" id="likes-form-{{ comment.pk }}" action="{% url 'chat:like/unlike' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="pk" value="{{ comment.pk }}">
-                    <input type="submit" value="Like/unlike">
-                </form>
+{#                <button class="like-button">Like/Unlike</button>#}
                 <button class="reply">Reply</button>
             </p>
         {% endif %}
+
+        <p class="likes" style="display: none">{{ comment.amount_likes }} likes </p>
+        <form method="post" class="like-unlike-form" id="like-form-{{ comment.pk }}"
+              action="{% url 'chat:like/unlike' %}">
+            {% csrf_token %}
+            <input type="hidden" name="pk" class="pk" value="{{ comment.pk }}">
+            <input type="hidden" name="like-amount" class="like-amount" value="{{ comment.amount_likes}}">
+            <input type="submit" class="like" value="Like/unlike">
+        </form>
+
         {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
-        <form class="form-inline comment-form reply-form" method="POST" action="{% url 'chat:post_comment' %}"
+        <form class="form-inline comment-form reply-form" id="comment-form-{{ comment.pk }}" method="POST"
+              action="{% url 'chat:post_comment' %}"
               enctype="multipart/form-data" style="display: none;">
             {% csrf_token %}
             <input type="text" name="text" id="text" placeholder="text"
@@ -51,7 +88,7 @@
             <input type="hidden" name="pk" id="pk" value="{{ comment.pk }}">
             <input type="submit" class="btn btn-primary submit-comment" value="Reply"/>
         </form>
-
+    </div>
 
 
         {% new_distance comment.distance_from_sourse as distance %}

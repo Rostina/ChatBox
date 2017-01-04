@@ -29,7 +29,12 @@ def share_button_filter(post, user):
             return False
     return True
 
-
+@register.assignment_tag()
+def last_5_comments(comments):
+    length = len(comments) - 5
+    if length < 0:
+        return comments
+    return comments[length:]
 
 @register.assignment_tag()
 def new_distance(distance):
@@ -38,7 +43,7 @@ def new_distance(distance):
 
 @register.assignment_tag()
 def has_comments(post, distance):
-    comments = models.Chat.objects.filter(comment=post).filter(distance_from_sourse=distance)
+    comments = models.Chat.objects.filter(comment=post).filter(distance_from_sourse=distance).order_by("-time_posted")
     return comments
 
 

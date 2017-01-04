@@ -4,7 +4,16 @@
 
 {% block title %}ChatBox{% endblock %}
 
+<script>
+{% block javascript %}
+
+
+
+{% endblock %}
+</script>
+
 {% block content %}
+
     <div class="col-sm-8 col-sm-offset-3">
 
         <form id="post-form" method="POST" action="" enctype="multipart/form-data">
@@ -53,7 +62,7 @@
                                         <input type="submit" value="Like/unlike">
                                     </form>
                                     {% for sharer in post.users.all %}
-                                        {% if sharer.id in friends %}
+                                        {% if sharer.id in friends and sharer != user %}
                                         <h5>
                                             <img src="{{ sharer.picture.url }}" class="profile_pic"/>
                                             <a href="" class="name">{{ sharer }}</a> shared <strong>{{ post.title  }}</strong>
@@ -70,7 +79,7 @@
                                     </form>
                                     {% endif %}
 
-                                    <form class="comment-form" method="POST" action="{% url 'chat:post_comment' %}"
+                                    <form class="comment-form" id="comment-form-{{ post.pk }}" method="POST" action="{% url 'chat:post_comment' %}"
                                           enctype="multipart/form-data">
                                         {% csrf_token %}
                                         {#                        <div class="form-group">#}
@@ -89,7 +98,7 @@
                                         <input type="submit" class="btn btn-primary submit-comment" value="Comment"/>
 
                                     </form>
-                                    <div id="new-post"></div>
+                                    <div id="new-post-{{ post.pk }}"></div>
                                     {% has_comments post 2 as comments %}
                                     {% if comments %}
                                         {% comments_list comments %}
@@ -118,5 +127,5 @@
             </div>
         </div>
     </div>
-    {% include "chat/ajax.html" %}
+{% include "chat/ajax.html" %}
 {% endblock %}

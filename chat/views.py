@@ -36,7 +36,7 @@ def chat_box_posts(request):
         post.user = user
         post.save()
         messages.success(request, "Posted!")
-    paginator = Paginator(posts_list, 40)  # Show 5 contacts per page
+    paginator = Paginator(posts_list, 40)  # Show 40 contacts per page
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
@@ -133,6 +133,7 @@ def like_unlike(request):
         post.likes = "0,{}".format(user.pk)
         post.save()
         print("he had no likes loser")
+        flash_message = "First Liked!"
         messages.success(request, "First like! {}: ____ {} ".format(post.amount_likes, post.likes))
         return HttpResponseRedirect(reverse("chat:chat"))
     if user.pk in likes:
@@ -170,8 +171,8 @@ def share(request):
     post.save()
     if request.is_ajax():
         return JsonResponse({
-            'pk': pk,
-            'postTitle': post
+            'post_title': post.title, # needs to be post.title
+            'post_pk': pk
         })
     else:
         messages.success(request, "Post Shared!")
@@ -245,14 +246,14 @@ def make_comments(request, pk):
 
 @login_required()
 def post_comment(request):
+    """Posting comments"""
     user = models.Profile.objects.get(username=request.user.username)
     pk = request.POST.get("pk")
-    print(pk)
     post = get_object_or_404(models.Chat, pk=pk)
     form = forms.CommentForm(request.POST, request.FILES)
-    print(form)
     # image = request.GET.get("image")
     # text = request.GET.get("text")
+    comment = ""
     if form.is_valid():
         print("Form is valid")
         comment = form.save(commit=False)
@@ -260,20 +261,12 @@ def post_comment(request):
         comment.share = "Public"
         comment.comment = post
         comment.distance_from_sourse = post.distance_from_sourse + 1
-        print(comment.distance_from_sourse)
         comment.save()
         print("Comment is saved")
-        print(comment.pk)
-        print(comment.image)
-        """models.Chat.objects.create(
-            comment=post,
-            distance_from_sourse=post.distance_from_sourse + 1,
-            image=image,
-            text=text,
-            share="Public",
-            user=user,
-        )"""
-        messages.success(request, "Comment has been added")
-    else:
-        messages.error(request, "Comment need either a picture or a comment")
+    if request.is_ajax():
+        return JsonResponse({
+            'pk': comment.pk,
+            'comment': comment.text
+        })
+    # messages.error(request, "Comment need either a picture or a comment")
     return HttpResponseRedirect(reverse('home'))
