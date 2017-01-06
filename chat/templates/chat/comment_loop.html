@@ -25,6 +25,7 @@
 
         $(".more-comments").click(function() {
             // TODO: Fix bug that the button reveals comments on the post below it
+            // TODO: Make that button doesnt reveal all comments on a posific comment
             // TODO: Implement that button only reveals the next 10 comments and than 10 after
             {% for comment in comments %}
                 $("#iii-"+{{ comment.pk }}).css("display", "block").css("padding-left", index + "%");

@@ -7,10 +7,19 @@ register = template.Library()
 
 @register.assignment_tag()
 def post_filter(post, user, friends):
+    if post.share == "Only Me":
+        if user == post.user:
+            return True
+        else:
+            return False
+    elif post.share == "Private Message":
+        if user == post.private_message:
+            return True
+        return False
     for sharer in post.users.all():
         if sharer.id in friends:
             return True
-    if post.share == 'Public' or post.user == user:
+    if post.share == 'Public' or post.share == "Private Message" or post.user == user:
         return True
     elif friends == False:
         return False

@@ -43,7 +43,12 @@ class FriendMessage(models.Model):
 
 
 class Chat(models.Model):
-    SHARINGCHOICES = (("Public", "Public"), ("Friends", "Friends"))
+    SHARINGCHOICES = (
+        ("Public", "Public"),
+        ("Friends", "Friends"),
+        ("Only Me", "Only Me"),
+        ("Private Message", "Private Message")
+    )
     comment = models.ForeignKey('self', null=True, blank=True, default=None)
     distance_from_sourse = models.PositiveIntegerField(default=1)
     likes = models.CharField(
@@ -51,6 +56,8 @@ class Chat(models.Model):
         default="",
         validators=[validate_comma_separated_integer_list]
     )
+    private_message = models.ForeignKey(Profile, null="True")
+
     amount_likes = models.IntegerField(default=0)
     title = models.CharField(max_length=400, default="Post", null=True, blank=True)
     image = models.ImageField(upload_to='images',

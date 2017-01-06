@@ -7,15 +7,16 @@
     {% for friend in friends %}
         <div class="col-sm-12">
             <div class="thumbnail">
-                <div class="caption"><a href="{% url 'chat:friend_detail' pk=friend.pk%}">
+                <div class="caption">
                     <img src="{{ friend.picture.url }}" class="img-responsive" />
-                    <h1>{{ friend }}</h1>
+                    <a href="{% url 'chat:friend_detail' pk=friend.pk%}"><h1>{{ friend }}</h1></a>
                     <p>Phone number: {{ friend.phone }}</p>
                     <p>Email: {{ friend.email }}</p>
                     <p>Gender: {{ friend.gender }}</p>
                     <p>Birthday: {{ friend.birthday }}</p>
                     {% block friend_request %}{% endblock %}
-                </a></div>
+                    // TODO: Theres a bug that when button pressed it gets 404
+                </div>
             </div>
         </div>
     </div>

@@ -32,8 +32,18 @@ def chat_box_posts(request):
     posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
     form = forms.ChatPostForm(request.POST, request.FILES or None)
     if form.is_valid():
+        share_with = request.POST.get("share_with").lower()
         post = form.save(commit=False)
         post.user = user
+        if len(share_with) > 0 and post.share == "Private Message":
+            all_people = models.Profile.objects.all()
+            for people in all_people:
+                if people.first_name.lower() == share_with or people.last_name.lower() == share_with or people.username.lower() == share_with:
+                    post.private_message = people
+                    break
+            else:
+                post.share = "Friends"
+                messages.warning(request, "couldn't find friend we set post to share with all friends")
         post.save()
         messages.success(request, "Posted!")
     paginator = Paginator(posts_list, 40)  # Show 40 contacts per page
@@ -46,7 +56,10 @@ def chat_box_posts(request):
     except EmptyPage:
         # If page is out of range (e.g. 9999), deliver last page of results.
         posts = paginator.page(paginator.num_pages)
-    return render(request, 'chat/chatbox.html', {'user': user, 'friends': friends, 'posts': posts, 'form': form})
+    return render(request, 'chat/chatbox.html', {'user': user,
+                                                 'friends': friends,
+                                                 'posts': posts,
+                                                 'form': form})
 
 
 class ProfileDetailView(DetailView):

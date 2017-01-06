@@ -6,7 +6,14 @@
 
 <script>
 {% block javascript %}
-
+    $("#share").click(function() {
+        var share = $(this).children().val();
+        if (share == "Private Message") {
+            $("#only-me").css("display", "block");
+        } else {
+            $("#only-me").css("display", "none");
+        }
+    });
 
 
 {% endblock %}
@@ -21,6 +28,7 @@
             <p id="image">{{ form.image }}</p>
             <p id="text">{{ form.text }}</p>
             <p id="share">{{ form.share }}</p>
+            <input id="only-me" type="text" placeholder="share with" name="share_with"style="display: none">
             {% csrf_token %}
             <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
         </form>
@@ -36,8 +44,7 @@
                         <div class="col-sm-12">
                             <div class="thumbnail">
                                 <div class="caption">
-                                    <h2>{{ post.users.first }}</h2>
-
+                                    <h2>{{ private_friends }}</h2>
                                     <h3>
                                         <img src="{{ post.user.picture.url }}" class="profile_pic"/>
                                         {{ post.title }}
