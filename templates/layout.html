@@ -41,7 +41,7 @@
                 <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
                 <li class="has-sumenu"><a href="{% url 'chat:post' %}">Post a message</a></li>
                 <form class="navbar-form navbar-left" method="get" name="tabForm">
-                    <input type="text" name="q" placeholder="Search for friends" value="{{ request.GET.q }}"/>
+                    <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}"/>
                     <input type="button" class="search-button btn btn-primary" value="Search Posts" onclick="searchButton();"/>
                     <input type="button" style="display:none" id="submit-find-friends" class="btn btn-info" value="Find Friends" onclick="findFriends();"/>
                 </form>

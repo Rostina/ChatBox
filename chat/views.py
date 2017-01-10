@@ -37,9 +37,14 @@ def chat_box_posts(request):
                                                                                Q(text__icontains=search)
 
                                                                                ).order_by("-time_posted")
+            if posts_list.exists():
+                pass
+            else:
+                posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+                messages.info(request, "We couldn't find any comment with " + search + ".")
             print("We got your search ")
         except ValueError:
-            print("SOrry we dont got tha that " + search)
+            print("Sorry we don't got tha that " + search)
             posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
     else:
         posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
@@ -83,12 +88,14 @@ class ProfileDetailView(DetailView):
 def friends(request):
     """returns all friends of a person"""
     user = models.Profile.objects.get(username=request.user.username)
+    users_friends = user.friends.split(",")
+    users_friends = len(users_friends)
     fri = friend_list(user.friends)
     if fri == False:
         messages.info(request, "Lets find some friends for you")
         return HttpResponseRedirect(reverse("chat:find_friends"))
     friends = models.Profile.objects.filter(pk__in=fri)
-    return render(request, 'chat/friends.html', {'friends': friends})
+    return render(request, 'chat/friends.html', {'friends': friends, 'user': user, 'users_friends': users_friends})
 
 
 @login_required
@@ -97,6 +104,8 @@ def find_friends(request):
     search = request.GET.get("q")
     user = models.Profile.objects.get(username=request.user.username)
     old_friends = friend_list(user.friends)
+    users_friends = user.friends.split(",")
+    users_friends = len(users_friends)
     your_friends = None
     friends = models.Profile.objects.filter(username__icontains=search)
     print(friends)
@@ -107,7 +116,7 @@ def find_friends(request):
         if search:
             messages.info(request, "<p>We couldn't find anything for <strong>" + search + "</strong></p>" +
                           "<p>Looking for people or posts? Try entering a name, location, or different words.</p>")
-    return render(request, "chat/find_friends.html", {'friends': friends, 'user': user, 'your_friends': your_friends, 'search': search})
+    return render(request, "chat/find_friends.html", {'friends': friends, 'user': user, 'users_friends': users_friends, 'your_friends': your_friends, 'search': search})
 
 
 @login_required()
