@@ -1,6 +1,7 @@
 {% load staticfiles %}
 
 <script>
+    // chatbox.html
     $(document).ready(function() {
     $(".submit-comment").click(function (event) {
         event.preventDefault();
@@ -37,6 +38,8 @@
         }
     });
 
+
+    // comment_loop.html
     $(".like-unlike-form").submit(function (event) {
         // likes and likes posts
         event.preventDefault();
@@ -86,5 +89,83 @@
             }
         });
     });
+
+
+        // friends.hyml - find_friends.html
+        $(".friend_request").click(function(event) {
+            event.preventDefault();
+            var numbbb = parseInt($(this).prev("input[type='hidden']").val());
+            var data = {
+                friend: numbbb,
+            };
+            $.ajax({
+                type: "GET",
+                url: "{% url 'chat:friend_request' %}",
+                data: data,
+                success: function (data) {
+                    alert("Went well");
+                    $("#friend_" + numbbb + " .friend_request").fadeOut();
+                    showFlashMessage("Friend Request sent");
+                    document.getElementById("message_"+numbbb).innerHTML = "Friend Request sent";
+                    $("#friend_" + numbbb).css({'color': 'chocolate'});
+                },
+                error: function (responce, error) {
+                    alert("Didn' t Go");
+                    $("#friend_" + numbbb).submit();
+                }
+
+            })
+
+        });
+
+
+        // messages.html
+        $(".message_seen").click(function(event) {
+            event.preventDefault();
+            var numbbb = parseInt($(this).prevAll(".message_pk").val());
+            var data = {
+                message_pk: numbbb,
+            };
+            alert(numbbb);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'chat:message_seen' %}",
+                data: data,
+                success: function (data) {
+                    alert("Went well");
+                    $("#message_" + numbbb).fadeOut();
+                },
+                error: function (responce, error) {
+                    alert("Didn' t Go");
+                    $("#message_" + numbbb).submit();
+                }
+
+            })
+
+        });
+
+        $(".confirm_friend").click(function(event) {
+            event.preventDefault();
+            var numbbb = parseInt($(this).prevAll("input[type='hidden']").val());
+            var data = {
+                message_pk: numbbb,
+            };
+            alert(numbbb);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'chat:confirm_friend' %}",
+                data: data,
+                success: function (data) {
+                    alert("Went well");
+                    $("#friend_request_" + numbbb).fadeOut();
+                },
+                error: function (responce, error) {
+                    alert("Didn' t Go");
+                    $("#friend_request_" + numbbb).submit();
+                }
+
+            })
+
+        });
     });
 </script>

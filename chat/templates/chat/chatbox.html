@@ -6,14 +6,7 @@
 
 <script>
 {% block javascript %}
-    $("#share").click(function() {
-        var share = $(this).children().val();
-        if (share == "Private Message") {
-            $("#only-me").css("display", "block");
-        } else {
-            $("#only-me").css("display", "none");
-        }
-    });
+
 
 
 {% endblock %}
@@ -57,7 +50,7 @@
                                     {% endif %}
                                     <p class="post-text" style="">{{ post.text|linebreaks }}</p>
                                     <p>
-                                        <small>{{ post.share }}</small>
+                                        <small>{{ post.share }}{% if post.share == "Private Message" %} to: <strong>{{ user }}</strong>{% endif %}</small>
                                         <button class="reply" style="display: none;">Reply</button>
                                     </p>
                                     <p class="likes" {% if post.amount_likes < 1 %}style="display: none"{% endif %}>

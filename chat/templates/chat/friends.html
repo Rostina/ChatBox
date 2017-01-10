@@ -4,6 +4,16 @@
 
 {% block content %}
     <div class="row">
+    {% if friends|length == 0 %}
+        <div class="col-sm-8">
+        <div class="thumbnail">
+            <div class="friends-no">
+        <p>We couldn't find anything for <strong>{{ search }}</strong></p>
+        <p>Looking for people or posts? Try entering a name, location, or different words.</p>
+            </div>
+        </div>
+        </div>
+    {% endif %}
     {% for friend in friends %}
         <div class="col-sm-12">
             <div class="thumbnail">
@@ -15,10 +25,14 @@
                     <p>Gender: {{ friend.gender }}</p>
                     <p>Birthday: {{ friend.birthday }}</p>
                     {% block friend_request %}{% endblock %}
-                    // TODO: Theres a bug that when button pressed it gets 404
+                    <script>
+                        // TODO: Theres a bug that when button pressed it gets 404
+                        // TODO: if search returns nothing return message that we couldnt find friend
+                    </script>
                 </div>
             </div>
         </div>
     </div>
     {% endfor %}
+    {% include "chat/ajax.html" %}
 {% endblock %}

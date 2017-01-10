@@ -51,6 +51,11 @@ input.file {
 	z-index: 2;
 }
 
+
 .reply-form {
     display: none;
+}
+
+.friends-no {
+    background-color: #f9faae;
 }

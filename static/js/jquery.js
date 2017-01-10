@@ -18,11 +18,26 @@ $(document).ready(function () {
     }
     
     
+    // layout nav bar
+    $(".search-button").hover(function() {
+        $(this).parent().siblings("#find-friends-form").children("#submit-find-friends").css("display", "inline");
+        $(this).next().css("display", "inline");
+    });
+    
+    $(".top-bar").mouseleave(function() {
+        $(this).next().css("display", "none");
+    });
 
-    $(function () {
-        // shows images
-        var image;
-        $(".image-link").click(function (event) {
+    $(".submit-find-friends").click(function () {
+        $("#find-friends-form").submit();
+    });
+    
+    
+    // chat.html
+     $(function () {
+         // shows images
+         var image;
+         $(".image-link").click(function (event) {
             event.preventDefault();
             var pk = $(this).next(type = "hidden");
             if ($(this).next().hasClass("image-link") === true) {
@@ -48,9 +63,32 @@ $(document).ready(function () {
             }
 
 
-        });
+         });
+    });
+    
+    $("#share").click(function() {
+        var share = $(this).children().val();
+        if (share == "Private Message") {
+            $("#only-me").css("display", "block");
+        } else {
+            $("#only-me").css("display", "none");
+        }
     });
 
+    
+    // comment_loop.html
+     $(".like-button").click(function() {
+         console.log("like button pressed");
+         $(this).parent().siblings('.like-unlike-form').submit();
+     });
+
+    $(".like").hover(function() {
+        var likes = $(this).siblings(".like-amount").val();
+        if ($(this).parent().siblings(".likes").css("display", "hidden") && likes > 0) {
+            $(this).parent().siblings(".likes").css("display", "inline");
+        }
+    });
+    
     $(".reply").click(function () {
         // reveals form to reply to post
         $(this).parents().siblings(".comment-form").css("display", "inline");
@@ -68,8 +106,8 @@ $(document).ready(function () {
     $(".hide-replies").click(function () {
         $(this).parent().css("display", "none");
         $(this).parent().prev().css("display", "block");
+        alert("Whats with this");
         console.log("replies hidden");
     });
-
 });
 

@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import HttpResponseRedirect, JsonResponse, request
 from django.shortcuts import render, get_object_or_404
 
@@ -29,7 +30,19 @@ def chat_box_posts(request):
     """ the main page"""
     user = models.Profile.objects.get(username=request.user.username)
     friends = friend_list(user.friends)
-    posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+    search = request.GET.get('q')
+    if search:
+        try:
+            posts_list = models.Chat.objects.filter(distance_from_sourse=1).filter(Q(title__icontains=search) |
+                                                                               Q(text__icontains=search)
+
+                                                                               ).order_by("-time_posted")
+            print("We got your search ")
+        except ValueError:
+            print("SOrry we dont got tha that " + search)
+            posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+    else:
+        posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
     form = forms.ChatPostForm(request.POST, request.FILES or None)
     if form.is_valid():
         share_with = request.POST.get("share_with").lower()
@@ -85,12 +98,16 @@ def find_friends(request):
     user = models.Profile.objects.get(username=request.user.username)
     old_friends = friend_list(user.friends)
     your_friends = None
-    if search:
-        friends = models.Profile.objects.filter(username__icontains=search)
+    friends = models.Profile.objects.filter(username__icontains=search)
+    print(friends)
+    if search and friends.exists():
         your_friends = models.Profile.objects.filter(pk__in=old_friends)
     else:
         friends = models.Profile.objects.exclude(pk__in=old_friends).exclude(pk=user.pk).order_by()
-    return render(request, "chat/find_friends.html", {'friends': friends, 'user': user, 'your_friends': your_friends})
+        if search:
+            messages.info(request, "<p>We couldn't find anything for <strong>" + search + "</strong></p>" +
+                          "<p>Looking for people or posts? Try entering a name, location, or different words.</p>")
+    return render(request, "chat/find_friends.html", {'friends': friends, 'user': user, 'your_friends': your_friends, 'search': search})
 
 
 @login_required()

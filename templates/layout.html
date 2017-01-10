@@ -30,7 +30,7 @@
 
 <body>
 <nav class="navbar navbar-default navbar-static-top" role="navigation">
-    <section class="navigation">
+    <section class="top-bar navigation">
         <ul class="nav navbar-nav" data-dropdown-menu role="menubar">
             <li class="menu-text"><h4>The ChatBox!</h4></li>
             {% block submenu %}{% endblock %}
@@ -40,9 +40,10 @@
                 <li class="has-submenu"><a href="{% url 'chat:messages' %}">Check messages</a></li>
                 <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
                 <li class="has-sumenu"><a href="{% url 'chat:post' %}">Post a message</a></li>
-                <form class="navbar-form navbar-left" method="GET" action="{% url 'chat:find_friends' %}">
+                <form class="navbar-form navbar-left" method="get" name="tabForm">
                     <input type="text" name="q" placeholder="Search for friends" value="{{ request.GET.q }}"/>
-                    <input type="submit" class="btn btn-primary" value="Find Friends"/>
+                    <input type="button" class="search-button btn btn-primary" value="Search Posts" onclick="searchButton();"/>
+                    <input type="button" style="display:none" id="submit-find-friends" class="btn btn-info" value="Find Friends" onclick="findFriends();"/>
                 </form>
             {% else %}
                 <li class="has-submenu"><a href="{% url 'sign_up' %}">Sign up</a></li>
@@ -92,6 +93,18 @@
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
 <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
 <script>
+
+    function searchButton() {
+        document.tabForm.action = "{% url 'chat:chat' %}";
+        // document.tabForm.target = "_blank";
+        document.tabForm.submit();
+    }
+
+    function findFriends() {
+        document.tabForm.action = "{% url 'chat:find_friends' %}";
+        // document.tabForm.target = "_blank";
+        document.tabForm.submit();
+    }
     $(document).ready(function () {
         {%  block javascript %}{%  endblock %}
     });

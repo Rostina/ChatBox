@@ -2,31 +2,6 @@
 
 <script>
     {% block javascript %}
-        $(".friend_request").click(function(event) {
-            event.preventDefault();
-            var numbbb = parseInt($(this).prev("input[type='hidden']").val());
-            var data = {
-                friend: numbbb,
-            };
-            $.ajax({
-                type: "GET",
-                url: "{% url 'chat:friend_request' %}",
-                data: data,
-                success: function (data) {
-                    alert("Went well");
-                    $("#friend_" + numbbb + " .friend_request").fadeOut();
-                    showFlashMessage("Friend Request sent");
-                    document.getElementById("message_"+numbbb).innerHTML = "Friend Request sent";
-                    $("#friend_" + numbbb).css({'color': 'chocolate'});
-                },
-                error: function (responce, error) {
-                    alert("Didn' t Go");
-                    $("#friend_" + numbbb).submit();
-                }
-
-            })
-
-        });
     {% endblock %}
 </script>
 
