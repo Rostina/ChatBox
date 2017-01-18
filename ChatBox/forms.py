@@ -1,6 +1,6 @@
 from django import forms
 
-from chat.models import Profile
+from chat.models import FriendMessage, Profile
 
 
 def must_be_empty(value):
@@ -8,6 +8,14 @@ def must_be_empty(value):
         raise forms.ValidationError('is not empty')
 
 
+class MessageForm(forms.ModelForm):
+    title = forms.ChoiceField(choices=(('complaint', 'compliant'), ('request', 'request'), ('praise', 'praise'), ('job', 'job')))
+    class Meta:
+        model = FriendMessage
+        fields = ["title", "message"]
+
+    def clean(self):
+        cleaned_data = super().clean()
 
 
 class ProfileForm(forms.ModelForm):
@@ -33,12 +41,21 @@ class ProfileForm(forms.ModelForm):
         verify_email = cleaned_data.get('verify_email')
         password = cleaned_data.get('password')
         verify_password = cleaned_data.get('verify_password')
+        username = cleaned_data.get('first_name') + " " + cleaned_data.get('last_name')
 
         if email != verify_email:
             raise forms.ValidationError("You must enter the same email in both fields")
 
         if password != verify_password:
             raise forms.ValidationError("You must enter the same password in both fields")
+
+        if username == "ChatBox staff" or username == "No One":
+            raise forms.ValidationError("sorry that username is reserved to the ChatBox staff")
+        elif Profile.objects.filter(username=username).exists() and Profile.objects.filter(password=password).exists():
+            raise forms.ValidationError(
+                """Your name and/or password is already used by another person (different people)
+                Change a little your name or password"""
+            )
 
 
 class LoginForm(forms.Form):

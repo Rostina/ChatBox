@@ -40,6 +40,7 @@
                 <li class="has-submenu"><a href="{% url 'chat:messages' %}">Check messages</a></li>
                 <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
                 <li class="has-sumenu"><a href="{% url 'chat:post' %}">Post a message</a></li>
+                <li class="has-sumenu"><a href="{% url 'contact-us' %}">Contact Us</a></li>
                 <form class="navbar-form navbar-left" method="get" name="tabForm">
                     <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}"/>
                     <input type="button" class="search-button btn btn-primary" value="Search Posts" onclick="searchButton();"/>
@@ -48,6 +49,8 @@
             {% else %}
                 <li class="has-submenu"><a href="{% url 'sign_up' %}">Sign up</a></li>
                 <li class="has-submenu"><a href="{% url 'login' %}">Login</a></li>
+                <li class="has-submenu"><a href="{% url 'contact-us' %}">Contact Us</a></li>
+
             {% endif %}
         </ul>
     </section>
@@ -55,10 +58,10 @@
 
 {% if messages %}
     <div class="container">
-            {% for message in messages %}
-                <div class="alert alert-{% if message.tags == "error" %}danger{% else %}{{ message.tags }}{% endif %} text-center">
-                <p>{{ message.tags }}</p>
-                <p>{{ message }}</p>
+            {% for flash_message in messages %}
+                <div class="alert alert-{% if flash_message.tags == "error" %}danger{% else %}{{ flash_message.tags }}{% endif %} text-center">
+                <p>{{ flash_message.tags }}</p>
+                <p>{{ flash_message }}</p>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

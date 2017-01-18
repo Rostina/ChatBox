@@ -14,8 +14,13 @@
         </div>
         </div>
     {% endif %}
-    <p>You have <strong>{{ users_friends }}</strong> friends</p>
+    {% if request.user.is_staff %}
+         <p>Admin they are <strong>{{ users_friends }}</strong> users</p>
+    {% else %}
+        <p>You have <strong>{{ users_friends }}</strong> friends</p>
+    {% endif %}
     {% for friend in friends %}
+        {% if friend.username != "ChatBox staff" and friend.username != "No One" %}
         <div class="col-sm-12">
             <div class="thumbnail">
                 <div class="caption">
@@ -27,13 +32,14 @@
                     <p>Birthday: {{ friend.birthday }}</p>
                     {% block friend_request %}{% endblock %}
                     <script>
-                        // TODO: Theres a bug that when button pressed it gets 404
+                        // TODO: There's a bug that when button pressed it gets 404
                         // TODO: if search returns nothing return message that we couldnt find friend
                     </script>
                 </div>
             </div>
         </div>
     </div>
+        {% endif %}
     {% endfor %}
     {% include "chat/ajax.html" %}
 {% endblock %}

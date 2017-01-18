@@ -20,7 +20,17 @@
             <p id="title">{{ form.title }}</p>
             <p id="image">{{ form.image }}</p>
             <p id="text">{{ form.text }}</p>
-            <p id="share">{{ form.share }}</p>
+            {% if request.user.is_staff %}
+            <p id="share"><select id="id_share" name="share" required>
+                <option value="" selected="selected">-----------</option>
+                <option value="Public">Public</option>
+                <option value="Only Me">Only Me</option>
+                <option value="Private Message">Private Message</option>
+            </select></p>
+            {% else %}
+            <p>{{ form.share }}</p>
+            {% endif %}
+
             <input id="only-me" type="text" placeholder="share with" name="share_with"style="display: none">
             {% csrf_token %}
             <input type="submit" class="btn btn-primary" id="submit-post" value="Post">
@@ -56,11 +66,13 @@
                                     <p class="likes" {% if post.amount_likes < 1 %}style="display: none"{% endif %}>
                                         {{ post.amount_likes }} likes
                                     </p>
+                                    {% if request.user.is_staff == False %}
                                     <form method="post" class="like-unlike-form" id="like-form-{{ post.pk }}" action="{% url 'chat:like/unlike' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="pk" value="{{ post.pk }}">
                                         <input type="submit" value="Like/unlike">
                                     </form>
+                                    {% endif %}
                                     {% for sharer in post.users.all %}
                                         {% if sharer.id in friends and sharer != user %}
                                         <h5>
@@ -71,7 +83,7 @@
                                     {% endfor %}
                                     <div id="new-ajax-sharer-{{ post.pk }}"></div>
                                     {% share_button_filter post user as shared %}
-                                    {% if shared %}
+                                    {% if shared and request.user.is_staff == False %}
                                     <form method="post" class="share-form" id="share-form-{{ post.pk }}" action="{% url 'chat:share' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="pk" value="{{ post.pk }}">

@@ -37,6 +37,7 @@ class FriendMessage(models.Model):
     from_user = models.CharField(max_length=105)
     to_user = models.ForeignKey(Profile)
     title = models.CharField(max_length=50)
+    message = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title

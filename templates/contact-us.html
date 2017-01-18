@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}contact us{% endblock %}
+
+{% block content %}
+    <div class="col-sm-6 col-sm-offset-3">
+        <h1>Contact us with your issues</h1>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {{  form.as_p }}
+            {% csrf_token %}
+            <input type="submit" class="btn btn-primary" value="Send Message">
+        </form>
+    </div>
+{% endblock %}

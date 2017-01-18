@@ -14,6 +14,8 @@
             <h4 style="color: chocolate">This is you!</h4>
         {% elif friend in your_friends%}
             <h4 style="color: red">This is your friend allready!</h4>
+        {% elif request.user.is_staff %}
+            <h4 style="color: green;">ADMIN: WELCOME {{ friend.time_posted }}</h4>
         {% else %}
             <input type="submit" class="btn btn-primary friend_request"  role="button" value="Make Friend Request!">
             <h4 id="message_{{ friend.pk }}" style="color: chocolate"></h4>

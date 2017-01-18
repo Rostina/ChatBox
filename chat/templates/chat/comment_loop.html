@@ -52,6 +52,7 @@
         {% endif %}
 
         <p class="likes" style="display: none">{{ comment.amount_likes }} likes </p>
+        {% if request.user == False %}
         <form method="post" class="like-unlike-form" id="like-form-{{ comment.pk }}"
               action="{% url 'chat:like/unlike' %}">
             {% csrf_token %}
@@ -59,6 +60,7 @@
             <input type="hidden" name="like-amount" class="like-amount" value="{{ comment.amount_likes}}">
             <input type="submit" class="like" value="Like/unlike">
         </form>
+        {% endif %}
 
         {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
         <form class="form-inline comment-form reply-form" id="comment-form-{{ comment.pk }}" method="POST"

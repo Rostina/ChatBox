@@ -16,7 +16,7 @@ urlpatterns = [
 
     url(r'^post/$', views.post_chat, name='post'),
     url(r'^fast post/$', views.fast_post, name='fast_post'),
-    url(r'^post/(?P<pk>\d+)/$', views.make_comments, name='comment'),
+    # url(r'^post/(?P<pk>\d+)/$', views.make_comments, name='comment'),
     url(r'^comment/$', views.post_comment, name='post_comment'),
     url(r'^like/$', views.like_unlike, name='like/unlike'),
     url(r'^share/$', views.share, name='share'),
