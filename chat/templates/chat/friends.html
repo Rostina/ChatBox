@@ -16,11 +16,11 @@
     {% endif %}
     {% if request.user.is_staff %}
          <p>Admin they are <strong>{{ users_friends }}</strong> users</p>
-    {% else %}
+    {% elif users > 0 %}
         <p>You have <strong>{{ users_friends }}</strong> friends</p>
     {% endif %}
     {% for friend in friends %}
-        {% if friend.username != "ChatBox staff" and friend.username != "No One" %}
+        {% if friend.username != "ChatBox staff" and friend.username != "No One" and friend.username != "d d" %}
         <div class="col-sm-12">
             <div class="thumbnail">
                 <div class="caption">

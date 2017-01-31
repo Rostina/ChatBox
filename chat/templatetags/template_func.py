@@ -42,11 +42,13 @@ def share_button_filter(post, user):
     return True
 
 @register.assignment_tag()
-def last_5_comments(comments):
+def last_5_comments(comments, loop):
     length = len(comments) - 5
+    # loop = int(loop) + 1
     if length < 0:
         return comments
     return comments[length:]
+
 
 @register.assignment_tag()
 def new_distance(distance):
@@ -57,6 +59,37 @@ def new_distance(distance):
 def has_comments(post, distance):
     comments = models.Chat.objects.filter(comment=post).filter(distance_from_sourse=distance).order_by("-time_posted")
     return comments
+
+
+@register.assignment_tag()
+def who_sent_messages(private_messages):
+    messages_from = {}
+    time = ""
+    add = True
+    for message in private_messages:
+        username = message.user.username
+        if time != message.user:
+            try:
+                time = models.Chat.objects.filter(private_message=message.user, user=message.private_message).latest('time_posted')
+                add = False
+            except:
+                add = True
+            print("TIME: " + time.text)
+        if message.time_posted > time.time_posted and add is False:
+
+            if username in messages_from:
+                messages_from[username] += 1
+            else:
+                messages_from[username] = 1
+        elif add is True:
+            if username in messages_from:
+                messages_from[username] += 1
+            else:
+                messages_from[username] = 1
+        else:
+            messages_from[username] = 0
+
+    return messages_from
 
 
 @register.inclusion_tag('chat/comment_loop.html')

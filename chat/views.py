@@ -29,12 +29,15 @@ def friend_list(user):
 def chat_box_posts(request):
     """ the main page"""
     username = request.user
+    loop = 0
     if request.user.is_staff == True:
         user = request.user
         friends = "admin"
+        num_friends = 0
     else:
         user = models.Profile.objects.get(username=username.username)
         friends = friend_list(user.friends)
+        num_friends = len(user.friends.split(",")) - 1
     search = request.GET.get('q')
     if search:
         try:
@@ -45,14 +48,14 @@ def chat_box_posts(request):
             if posts_list.exists():
                 pass
             else:
-                posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+                posts_list = models.Chat.objects.filter(distance_from_sourse=1).exclude(share="Private Message").order_by("-time_posted")
                 messages.info(request, "We couldn't find any comment with " + search + ".")
             print("We got your search ")
         except ValueError:
             print("Sorry we don't got that " + search)
-            posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+            posts_list = models.Chat.objects.filter(distance_from_sourse=1).exclude(share="Private Message").order_by("-time_posted")
     else:
-        posts_list = models.Chat.objects.filter(distance_from_sourse=1).order_by("-time_posted")
+        posts_list = models.Chat.objects.filter(distance_from_sourse=1).exclude(share="Private Message").order_by("-time_posted")
     form = forms.ChatPostForm(request.POST, request.FILES or None)
     if form.is_valid():
         share_with = request.POST.get("share_with").lower()
@@ -85,8 +88,10 @@ def chat_box_posts(request):
         posts = paginator.page(paginator.num_pages)
     return render(request, 'chat/chatbox.html', {'user': user,
                                                  'friends': friends,
+                                                 'num_friends': num_friends,
                                                  'posts': posts,
-                                                 'form': form})
+                                                 'form': form,
+                                                 })
 
 
 class ProfileDetailView(DetailView):
@@ -100,7 +105,7 @@ def friends(request):
     if user.is_staff == False:
         user = models.Profile.objects.get(username=request.user.username)
         users_friends = user.friends.split(",")
-        users_friends = len(users_friends)
+        users_friends = len(users_friends) - 1
         fri = friend_list(user.friends)
         if fri == False:
             messages.info(request, "Lets find some friends for you")
@@ -121,7 +126,7 @@ def find_friends(request):
         user = models.Profile.objects.get(username=request.user.username)
         old_friends = friend_list(user.friends)
         users_friends = user.friends.split(",")
-        users_friends = len(users_friends)
+        users_friends = len(users_friends) - 1
     else:
         old_friends = ""
         all_users = models.Profile.objects.all()
@@ -129,8 +134,7 @@ def find_friends(request):
     try:
         friends = models.Profile.objects.filter(username__icontains=search)
     except ValueError:
-        return HttpResponseRedirect(reverse('chat:friends'))
-    print(friends)
+        pass
     your_friends = None
     if search and friends.exists() and request.user.is_staff == False:
         your_friends = models.Profile.objects.filter(pk__in=old_friends)
@@ -297,8 +301,33 @@ def messages_list(request):
         user = models.Profile.objects.get(username="ChatBox staff")
     else:
         user = models.Profile.objects.get(username=u.username)
-    messages = models.FriendMessage.objects.filter(to_user=user.pk)
-    return render(request, 'chat/messages.html', {'user_messages': messages})
+    messages = models.FriendMessage.objects.filter(to_user=user.pk).exclude(title="Friend Request").exclude(title="Friend Accepted")
+    friend_accepted = models.FriendMessage.objects.filter(to_user=user.pk, title="Friend Accepted")
+    friend_request = models.FriendMessage.objects.filter(to_user=user.pk, title="Friend Request")
+    private_messages = models.Chat.objects.filter(private_message=user).order_by('user')
+    return render(request, 'chat/messages.html', {
+        'user_messages': messages,
+        'friend_request': friend_request,
+        'friend_accepted': friend_accepted,
+        'private_messages': private_messages,
+        'user': user
+    })
+
+
+@login_required()
+def messages_by_user(request):
+    """ Lists messages by user"""
+    username = request.GET.get('username')
+    user = request.user
+    if user.is_staff:
+        you = "NUZZ"
+    you = models.Profile.objects.get(username=user.username)
+    message_by = models.Profile.objects.get(username=username)
+    messages = models.Chat.objects.filter(
+        Q(private_message=you, user=message_by) |
+        Q(private_message=message_by, user=you)
+    ).order_by('time_posted')
+    return render(request, 'chat/messages_by_user.html', {'user_messages': messages, 'friend': message_by, 'user': you})
 
 
 @login_required()
@@ -307,6 +336,7 @@ def post_chat(request):
     if user.is_staff == False:
         user = models.Profile.objects.get(username=request.user.username)
     form = forms.ChatPostForm()
+    num_friends = len(user.friends.split(",")) - 1
     if request.method == "POST":
         form = forms.ChatPostForm(request.POST, request.FILES)
         if form.is_valid():
@@ -317,7 +347,7 @@ def post_chat(request):
             post.save()
             messages.success(request, "New ChatBox posted")
             return HttpResponseRedirect(reverse('home'))
-    return render(request, 'chat/post_chat.html', {'form': form})
+    return render(request, 'chat/post_chat.html', {'form': form, 'num_friends': num_friends})
 
 
 @login_required()
@@ -332,31 +362,17 @@ def fast_post(request):
 
 
 @login_required()
-def make_comments(request, pk):
-    user = models.Profile.objects.get(username=request.user.username)
-    post = get_object_or_404(models.Chat, pk=pk)
-    form = forms.CommentForm()
-    if request.method == "POST":
-        form = forms.CommentForm(request.POST, request.FILES)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.user = user
-            comment.share = "Public"
-            comment.comment = post
-            comment.distance_from_sourse = post.distance_from_sourse + 1
-            comment.save()
-            messages.success(request, "Comment added")
-            return HttpResponseRedirect(reverse('home'))
-
-
-@login_required()
 def post_comment(request):
     """Posting comments"""
     user = request.user
     if user.is_staff == False:
         user = models.Profile.objects.get(username=request.user.username)
     pk = request.POST.get("pk")
-    post = get_object_or_404(models.Chat, pk=pk)
+    type = request.POST.get("type")
+    if type == "private":
+        to = models.Profile.objects.get(pk=pk)
+    else:
+        post = models.Chat.objects.get(pk=pk)
     form = forms.CommentForm(request.POST, request.FILES)
     # image = request.GET.get("image")
     # text = request.GET.get("text")
@@ -367,9 +383,13 @@ def post_comment(request):
         if request.user.is_staff:
             user = models.Profile.objects.get("ChatBox staff")
         comment.user = user
-        comment.share = "Public"
-        comment.comment = post
-        comment.distance_from_sourse = post.distance_from_sourse + 1
+        if type == "private":
+            comment.share = "Private Message"
+            comment.private_message = to
+        else:
+            comment.share = "Public"
+            comment.comment = post
+            comment.distance_from_sourse = post.distance_from_sourse + 1
         comment.save()
         print("Comment is saved")
     if request.is_ajax():
@@ -378,4 +398,4 @@ def post_comment(request):
             'comment': comment.text
         })
     # messages.error(request, "Comment need either a picture or a comment")
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))

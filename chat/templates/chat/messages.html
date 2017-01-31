@@ -1,51 +1,12 @@
 {% extends "layout.html" %}
 
+{% load template_func %}
+
 <script>
     {% block javascript %}
-        $(".message_seen").click(function(event) {
-            event.preventDefault();
-            var numbbb = parseInt($(this).prevAll(".message_pk").val());
-            var data = {
-                message_pk: numbbb,
-            };
-            $.ajax({
-                type: "GET",
-                url: "{% url 'chat:message_seen' %}",
-                data: data,
-                success: function (data) {
-                    $("#message_" + numbbb).fadeOut().parents("#message_box").fadeOut();
-                },
-                error: function (responce, error) {
-                    alert("Didn' t Go");
-                    $("#message_" + numbbb).submit();
-                }
 
-            })
 
-        });
 
-        $(".confirm_friend").click(function(event) {
-            event.preventDefault();
-            var numbbb = parseInt($(this).prevAll("input[type='hidden']").val());
-            var data = {
-                message_pk: numbbb,
-            };
-            alert(numbbb);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'chat:confirm_friend' %}",
-                data: data,
-                success: function (data) {
-                    $("#friend_request_" + numbbb).fadeOut();
-                },
-                error: function (responce, error) {
-                    alert("Didn' t Go");
-                    $("#friend_request_" + numbbb).submit();
-                }
-
-            })
-
-        });
     {% endblock %}
 </script>
 
@@ -53,42 +14,31 @@
 
 {% block content %}
 
+    {% who_sent_messages private_messages  as messages_from %}
+        {% for username, messages in messages_from.items %}
+                <form method="get" action="{% url 'chat:messages_by_user' %}">
+                <input type="hidden" name="username" value="{{ username }}">
+                <h3><input class="bg-success" type="submit" value="{% if messages > 0 %}{{ messages }}{% else %}No new{% endif %} message{% if messages != 1 %}s{% endif %} from {{ username }}"></h3>
+                </form>
+
+        {% endfor %}
+        <div class="message-link-seperator">
 
         {% if user_messages %}
-        {% for message in user_messages %}
+            {% for message in friend_request %}
+                {% include "chat/message_loop.html" %}
+            {% endfor %}
+            {% for message in friend_accepted %}
+                {% include "chat/message_loop.html" %}
+            {% endfor %}
+            {% for message in user_messages %}
+                {% include "chat/message_loop.html" %}
+            {% endfor %}
 
-            <div class="thumbnail" id="message-box">
-            <div class="caption">
-                {% if message.title == "Friend Request" %}
-                    <form id="friend_request_{{ message.pk }}" method="get" action="{% url 'chat:confirm_friend'%}">
-
-                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
-                        <h3>Friend Request from {{ message.from_user }}</h3>
-                        <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
-                        <input type="submit" class="btn btn-primary confirm_friend" role="button" value="Accept Friend Reqeust!">
-                    </form>
-                {% else %}
-                    <form id="message_{{ message.pk }}" method="get" action="{% url 'chat:message_seen'%}">
-
-                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
-                        {% if message.title == "Friend Accepted" %}
-                            <h3>Friend Request accepted from {{ message.from_user }}</h3>
-                            <p>{{ message.from_user }} accepted your friend requested. Now you will see all his chats and he will see yours.</p>
-                        {% else %}
-                            <h3>{{ message.title}}</h3>
-                            {% if message.message %}
-                                <p>{{ message.message }}</p>
-                            {% endif %}
-                            <p>from <strong><a href="#">{{ message.from_user }}</a></strong></p>
-                        {% endif %}
-                        <input type="submit" class="btn btn-primary message_seen" role="button" value="X">
-                    </form>
-
-                {% endif %}
-            </div>
-            </div>
-        {% endfor %}
-        {% else %}
+        {% elif messages_from  %}{% else %}
             <h3> Sorry no messages</h3>
         {% endif %}
+        </div>
+
+    {% include "chat/ajax.html" %}
 {% endblock %}

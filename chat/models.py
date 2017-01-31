@@ -1,13 +1,14 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, validate_comma_separated_integer_list
 from django.db import models
+from autoslug import AutoSlugField
 
 # Create your models here.
-
+from django.template.defaultfilters import slugify
 
 
 class Profile(models.Model):
-    GENDERCHOICES = (("Male", "Male"), ("Female", "Female"))
+    GENDERCHOICES = (("Male", "Male"), ("Female", "Female"), ("Decline to identify", "Decline to identify"))
 
     picture = models.ImageField(upload_to='images', default='nick.jpg')
     first_name = models.CharField(max_length=50)
@@ -17,17 +18,21 @@ class Profile(models.Model):
     phone = models.CharField(max_length=17, validators=[phone_regex])
     email = models.EmailField(max_length=150)
     birthday = models.DateTimeField()
-    gender = models.CharField(max_length=6, choices=GENDERCHOICES)
+    gender = models.CharField(max_length=30, choices=GENDERCHOICES)
     friends = models.CharField(
         max_length=100000,
         default="",
         validators=[validate_comma_separated_integer_list]
     )
-    firends2 = models.ManyToManyField("Profile", null=True, blank=True)
+    slug = AutoSlugField(populate_from='username')
+    # firends2 = models.ManyToManyField("Profile", null=True, blank=True)
 
 
     """def friend_list(self):
         return list(self.friends.all())"""
+
+    def slug(self):
+        return slugify(self.username)
 
     def __str__(self):
         return "{} {}".format(self.first_name, self.last_name)
@@ -36,7 +41,7 @@ class Profile(models.Model):
 class FriendMessage(models.Model):
     from_user = models.CharField(max_length=105)
     to_user = models.ForeignKey(Profile)
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=True, blank=True)
     message = models.TextField(null=True, blank=True)
 
     def __str__(self):

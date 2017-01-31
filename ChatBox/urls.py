@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^login/$', views.loginer, name="login"),
     url(r'^logout/$', views.logout_view, name="logout"),
     url(r'^contact us/$', views.contact_us, name="contact-us"),
+    url(r'^respond/$', views.respond, name="respond"),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

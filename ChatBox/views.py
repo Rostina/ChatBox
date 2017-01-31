@@ -12,13 +12,20 @@ from chat import models
 
 def home(request):
     """main page"""
+    if request.user.is_staff:
+        return HttpResponseRedirect(reverse('chat:chat'))
     if request.user.is_authenticated:
+        user = models.Profile.objects.get(username=request.user.username)
+        friends = user.friends.split(",")
+        if len(friends) <= 1:
+            return HttpResponseRedirect(reverse('chat:find_friends'))
         return HttpResponseRedirect(reverse('chat:chat'))
     else:
         return HttpResponseRedirect(reverse('login'))
 
+
 def contact_us(request):
-    form = forms.MessageForm(request.POST or None)
+    form = forms.ContactStaffForm(request.POST or None)
     if form.is_valid():
         admin = models.Profile.objects.get(username="ChatBox staff")
         if request.user.is_authenticated and request.user.is_staff == False:
@@ -29,7 +36,7 @@ def contact_us(request):
         message.from_user = user
         message.to_user = admin
         message.save()
-        messages.success(request, "Message was recieved by our staff. We will contact you soon")
+        messages.success(request, "Message was received by our staff. We will contact you soon")
         if request.user.is_authenticated and request.user.is_staff == False:
             models.FriendMessage.objects.create(
                 to_user=user,
@@ -37,7 +44,29 @@ def contact_us(request):
                 title="We got your " + message.title + " message. We will contact you soon addressing your message."
             )
         return HttpResponseRedirect(reverse('home'))
-    return render(request, "contact-us.html", {'form': form})
+    return render(request, "contact-us.html", {'form': form, 'message_type': 'contact_us'})
+
+
+@login_required()
+def respond(request):
+    form = forms.RespondForm(request.POST or None)
+    pk = request.GET.get('pk')
+    # if not send_to:
+    #     return HttpResponseRedirect(reverse("chat:messages"))
+    send_to = models.Profile.objects.get(username=pk)
+    if form.is_valid():
+        if request.user.is_staff:
+            user = models.Profile.objects.get(username="ChatBox staff")
+        else:
+            user =  models.Profile.objects.get(username=request.user.username)
+
+        message =  form.save(commit=False)
+        message.to_user = send_to
+        message.from_user = user
+        message.save()
+        messages.success(request, "Message sent")
+        return HttpResponseRedirect(reverse('chat:messages'))
+    return render(request, 'contact-us.html', {'form': form, 'message_type': "response"})
 
 
 def loginer(request):
@@ -90,26 +119,9 @@ def sign_up(request):
             new_user.friends = str(new_user.pk)
             new_user.save()
             messages.success(request, "You are all signed up")
-
+            return HttpResponseRedirect(reverse('chat:find_friends'))
     return render(request, 'profile_form.html', {"form": form})
 
-"""
-class SignUpView(CreateView):
-    fields = ("first_name", "last_name", "phone",
-              "email", "birthday", "gender", "picture"
-              )
-    model = models.Profile
-
-    def form_valid(self, form):
-        User.objects.create_user(
-            username = "{} {}".format(
-                form.cleaned_data['first_name'],
-                form.cleaned_data['last_name']
-            ),
-            email=form.cleaned_data['email'],
-            password=form.cleaned_data['password']
-        )
-"""
 
 def logout_view(request):
     """logs out user"""

@@ -89,10 +89,13 @@ $(document).ready(function () {
         }
     });
     
+
     $(".reply").click(function () {
         // reveals form to reply to post
         $(this).parents().siblings(".comment-form").css("display", "inline");
         $(this).hide();
+        $(this).parents(".post").siblings(".show_replies").hide();
+        $(this).parents(".post").siblings(".hidden-items").show();
         console.log("Reply form revealed");
     });
 
@@ -106,7 +109,6 @@ $(document).ready(function () {
     $(".hide-replies").click(function () {
         $(this).parent().css("display", "none");
         $(this).parent().prev().css("display", "block");
-        alert("Whats with this");
         console.log("replies hidden");
     });
 });

@@ -1,0 +1,37 @@
+{% load staticfiles %}
+
+
+<div class="thumbnail col-sm-6 col-sm-offset-1" id="message-box-{{ message.pk }}">
+            <div class="caption ">
+                {% if message.title == "Friend Request" %}
+                    <form id="friend_request_{{ message.pk }}" method="get" action="{% url 'chat:confirm_friend'%}">
+
+                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
+                        <h3>Friend Request from {{ message.from_user }}</h3>
+                        <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
+                        <input type="submit" class="btn btn-primary confirm_friend" role="button" value="Accept Friend Reqeust!">
+                    </form>
+                {% else %}
+                    <form id="message_{{ message.pk }}" method="get" action="{% url 'chat:message_seen'%}">
+
+                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
+                        {% if message.title == "Friend Accepted" %}
+                            <h3>Friend Request accepted from {{ message.from_user }}</h3>
+                            <p>{{ message.from_user }} accepted your friend requested. Now you will see all his chats and he will see yours.</p>
+                        {% else %}
+                            <h3>{% if message.title %}{{ message.title}}{% endif %}</h3>
+                            {% if message.message %}
+                                <p>{{ message.message }}</p>
+                            {% endif %}
+                            <p>from <strong><a href="#">{{ message.from_user }}</a></strong></p>
+                        {% endif %}
+                        <input type="submit" class="btn btn-danger message_seen" role="button" value="X">
+                    </form>
+                    <form method="get" action="{% url 'respond' %}">
+                        <input type="hidden" class="message_pk" value="{{ message.from_user }}" name="pk">
+                        <input type="submit" class="btn btn-primary" value="Respond">
+                    </form>
+
+                {% endif %}
+            </div>
+            </div>

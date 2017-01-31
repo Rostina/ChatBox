@@ -18,6 +18,10 @@
     background: chocolate;
 }
 
+.message-link-seperator {
+    border-bottom: 20px;
+}
+
 .post-text {
     position: fixed;
     left: 50%;
@@ -56,6 +60,24 @@ input.file {
     display: none;
 }
 
+body {
+    background-color: #fcf8e3;
+}
+
 .friends-no {
     background-color: #f9faae;
+}
+
+.new-post {
+    padding-left: 10% ;
+}
+
+.caption {
+    background-color: #f3fbff;
+}
+
+.user-message {
+    max-width: 70%;
+    min-width:70%;
+    display: inline-block;
 }

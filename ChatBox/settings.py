@@ -122,11 +122,11 @@ USE_TZ = True
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..')
 SITE_ROOT = PROJECT_ROOT
 
-STATIC_URL = '/static/'
+STATIC_URL = '/assets/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-    os.path.join(SITE_ROOT, 'static'),
+    os.path.join(BASE_DIR, 'assets'),
+    os.path.join(SITE_ROOT, 'assets'),
 )
 
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), "static_cdn")

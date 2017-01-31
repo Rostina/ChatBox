@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^friend accepted/$', views.confirm_friend, name='confirm_friend'),
 
     url(r'^messages/$', views.messages_list, name="messages"),
+    url(r'^messages/users/$', views.messages_by_user, name="messages_by_user"),
     url(r'^message seen/$', views.message_seen, name='message_seen'),
 
     url(r'^post/$', views.post_chat, name='post'),

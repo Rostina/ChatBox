@@ -9,7 +9,7 @@
 
 {% block friend_request %}
     <form id="friend_{{ friend.pk }}" method="GET" href="{% url 'chat:friend_request' %}">
-        <input  type="hidden" name="friend" value="{{ friend.pk }}" >
+        <input type="hidden" class="pk" name="friend" value="{{ friend.pk }}" >
         {% if friend == user  %}
             <h4 style="color: chocolate">This is you!</h4>
         {% elif friend in your_friends%}
@@ -18,7 +18,7 @@
             <h4 style="color: green;">ADMIN: WELCOME {{ friend.time_posted }}</h4>
         {% else %}
             <input type="submit" class="btn btn-primary friend_request"  role="button" value="Make Friend Request!">
-            <h4 id="message_{{ friend.pk }}" style="color: chocolate"></h4>
+            <h2 id="friend-request-{{ friend.pk }}" style="color: chocolate"></h2>
         {% endif %}
     </form>
 {% endblock %}

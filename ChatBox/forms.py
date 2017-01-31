@@ -1,3 +1,5 @@
+from datetime import time, datetime
+
 from django import forms
 
 from chat.models import FriendMessage, Profile
@@ -8,7 +10,7 @@ def must_be_empty(value):
         raise forms.ValidationError('is not empty')
 
 
-class MessageForm(forms.ModelForm):
+class ContactStaffForm(forms.ModelForm):
     title = forms.ChoiceField(choices=(('complaint', 'compliant'), ('request', 'request'), ('praise', 'praise'), ('job', 'job')))
     class Meta:
         model = FriendMessage
@@ -18,8 +20,34 @@ class MessageForm(forms.ModelForm):
         cleaned_data = super().clean()
 
 
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = FriendMessage
+        fields = ['message', 'to_user']
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+
+class RespondForm(forms.ModelForm):
+    class Meta:
+        model = FriendMessage
+        fields = ['message']
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+
 class ProfileForm(forms.ModelForm):
-    birthday = forms.DateField(widget=forms.SelectDateWidget)
+    now = datetime.now()
+    start = now.year
+    end = now.year - 120
+    years = []
+    while start > end:
+        years.append(start)
+        start -= 1
+
+    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years))
     class Meta:
         model = Profile
         fields = ["first_name", "last_name", "phone",
@@ -42,6 +70,7 @@ class ProfileForm(forms.ModelForm):
         password = cleaned_data.get('password')
         verify_password = cleaned_data.get('verify_password')
         username = cleaned_data.get('first_name') + " " + cleaned_data.get('last_name')
+        birthday = cleaned_data.get('birthday')
 
         if email != verify_email:
             raise forms.ValidationError("You must enter the same email in both fields")
@@ -51,11 +80,16 @@ class ProfileForm(forms.ModelForm):
 
         if username == "ChatBox staff" or username == "No One":
             raise forms.ValidationError("sorry that username is reserved to the ChatBox staff")
-        elif Profile.objects.filter(username=username).exists() and Profile.objects.filter(password=password).exists():
+        elif (Profile.objects.filter(username=username).exists() and Profile.objects.filter(password=password).exists()
+            or Profile.objects.filter(username=username).exists()):
             raise forms.ValidationError(
                 """Your name and/or password is already used by another person (different people)
                 Change a little your name or password"""
             )
+
+        if birthday > datetime.now().date():
+            raise forms.ValidationError("This date has not yet happened!")
+
 
 
 class LoginForm(forms.Form):

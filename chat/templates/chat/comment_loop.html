@@ -8,6 +8,7 @@
         {% for comment in comments|slice:"1" %}
             nuzz = "{{ comment.distance_from_sourse }}";
         {% endfor %}
+        var loop = $(".loop_num").val();
         var index = (10 * parseInt(nuzz)) - 10;
         $(".iii").css("padding-left", index + "%");
 
@@ -15,19 +16,24 @@
             // TODO: Fix bug that the button reveals comments on the post below it
             // TODO: Make that button doesnt reveal all comments on a posific comment
             // TODO: Implement that button only reveals the next 10 comments and than 10 after
-            {% for comment in comments %}
-                $("#iii-"+{{ comment.pk }}).css("display", "block").css("padding-left", index + "%");
-            {% endfor %}
+            var commentShow = $(this).siblings(".comments").serialize();
+            console.log(commentShow);
+            for ( mcomm in commentShow) {
+                pk = mcomm;
+                $("#iii-" + pk).css("display", "block").css("padding-left", index + "%");
+            }
             $(this).hide();
         });
+
+
     {% endblock %}
 </script>
 
-{% last_5_comments comments as last_5 %}
+{% last_5_comments comments loop as last_5 %}
 {% if comments|length > 5 %}
     <button class="btn-warning more-comments">{{ comments|length }} More Comments</button>
     <input type="hidden" class="length" value="{{ comments|length }}">
-    <input type="hidden" class="length2" value="{{ comments|length }}">
+    <input type="hidden" class="comments" value="{{ comments }}">
 {% endif %}
 {% for comment in comments %}
     <div class="iii" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none"{% endif %}>
@@ -62,7 +68,6 @@
         </form>
         {% endif %}
 
-        {#    <p><a href="{% url 'chat:comment' pk=comment.pk %}" class="btn btn-primary" role="button">Reply</a>#}
         <form class="form-inline comment-form reply-form" id="comment-form-{{ comment.pk }}" method="POST"
               action="{% url 'chat:post_comment' %}"
               enctype="multipart/form-data" style="display: none;">
@@ -77,8 +82,10 @@
                 <i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
             </button>
             <input type="hidden" name="pk" id="pk" value="{{ comment.pk }}">
+            <input type="hidden" class="type" name="type" value="public">
             <input type="submit" class="btn btn-primary submit-comment" value="Reply"/>
         </form>
+        <div class="iii new-post" id="new-post-{{ post.pk }}"></div>
     </div>
 
 

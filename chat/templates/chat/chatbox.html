@@ -20,16 +20,15 @@
             <p id="title">{{ form.title }}</p>
             <p id="image">{{ form.image }}</p>
             <p id="text">{{ form.text }}</p>
-            {% if request.user.is_staff %}
             <p id="share"><select id="id_share" name="share" required>
                 <option value="" selected="selected">-----------</option>
                 <option value="Public">Public</option>
+                {% if num_friends > 0 %}
+                    <option value="Friends">Friends</option>
+                {% endif %}
                 <option value="Only Me">Only Me</option>
                 <option value="Private Message">Private Message</option>
             </select></p>
-            {% else %}
-            <p>{{ form.share }}</p>
-            {% endif %}
 
             <input id="only-me" type="text" placeholder="share with" name="share_with"style="display: none">
             {% csrf_token %}
@@ -47,7 +46,7 @@
                         <div class="col-sm-12">
                             <div class="thumbnail">
                                 <div class="caption">
-                                    <h2>{{ private_friends }}</h2>
+
                                     <h3>
                                         <img src="{{ post.user.picture.url }}" class="profile_pic"/>
                                         {{ post.title }}
@@ -60,7 +59,7 @@
                                     {% endif %}
                                     <p class="post-text" style="">{{ post.text|linebreaks }}</p>
                                     <p>
-                                        <small>{{ post.share }}{% if post.share == "Private Message" %} to: <strong>{{ user }}</strong>{% endif %}</small>
+                                        <small>{{ post.share }}{% if post.share == "Private Message" %} to: <strong>{{ post.private_message }}</strong>{% endif %}</small>
                                         <button class="reply" style="display: none;">Reply</button>
                                     </p>
                                     <p class="likes" {% if post.amount_likes < 1 %}style="display: none"{% endif %}>
@@ -94,10 +93,7 @@
                                     <form class="comment-form" id="comment-form-{{ post.pk }}" method="POST" action="{% url 'chat:post_comment' %}"
                                           enctype="multipart/form-data">
                                         {% csrf_token %}
-                                        {#                        <div class="form-group">#}
-                                        <input type="text" name="text" id="text" placeholder="text"
-                                               value="{{ request.GET.text }}"/>
-
+                                        <input type="text" name="text" id="text" placeholder="text" value="{{ request.GET.text }}"/>
                                         <div class="image-field">
                                             {# // where image input will be placed in jquery code#}
                                         </div>
@@ -106,11 +102,11 @@
                                                 class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
                                         </button>
                                         <input type="hidden" id="pk" name="pk" value="{{ post.pk }}">
-
+                                        <input type="hidden" class="type" name="type" value="public">
                                         <input type="submit" class="btn btn-primary submit-comment" value="Comment"/>
 
                                     </form>
-                                    <div id="new-post-{{ post.pk }}"></div>
+                                    <div class="new-post" id="new-post-{{ post.pk }}"></div>
                                     {% has_comments post 2 as comments %}
                                     {% if comments %}
                                         {% comments_list comments %}

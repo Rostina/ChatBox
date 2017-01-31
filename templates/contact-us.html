@@ -4,7 +4,9 @@
 
 {% block content %}
     <div class="col-sm-6 col-sm-offset-3">
-        <h1>Contact us with your issues</h1>
+        <h1>{% if message_type == "contact_us" %}Contact us with your issues{% else %}
+            Respond{% endif %}
+        </h1>
         <form method="POST" action="" enctype="multipart/form-data">
             {{  form.as_p }}
             {% csrf_token %}
