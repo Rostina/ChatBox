@@ -155,6 +155,24 @@
             })
         });
 
+        $(".respond-form").submit(function (event) {
+            event.preventDefault();
+            data = $(this).serialize();
+            $.ajax({
+                type: "POST",
+                url: "{% url 'chat:messages' %}",
+                data: data,
+                success: function(data) {
+
+                    alert("Message sent");
+                },
+                error: function(error) {
+                    $(".respond-form").submit();
+                    alert("Couldn't be sent");
+                }
+            })
+        });
+
 
         $(".confirm_friend").click(function(event) {
             event.preventDefault();

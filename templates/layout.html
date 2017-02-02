@@ -120,19 +120,6 @@
         document.tabForm.submit();
     }
     $(document).ready(function () {
-        $(".message-dropdown").click(function() {
-            $.ajax({
-                type: "GET",
-                url: "{% url 'chat:messages' %}",
-                success: function(data) {
-                    console.log(data);
-
-                },
-                error: function(error) {
-                    alert(error);
-                }
-            })
-        });
         {%  block javascript %}{%  endblock %}
     });
 </script>

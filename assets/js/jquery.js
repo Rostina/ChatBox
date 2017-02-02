@@ -113,3 +113,16 @@ $(document).ready(function () {
     });
 });
 
+
+// messages
+$(".respond").click(function() {
+        $respondForm =  $(this).siblings(".respond-form");
+        if ($respondForm.css("display") == "none") {
+            $(this).html("Hide Form");
+            $respondForm.show();
+        } else {
+            $(this).html("Respond");
+            $respondForm.hide();
+        }
+});
+

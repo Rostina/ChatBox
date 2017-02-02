@@ -26,17 +26,16 @@
                         {% endif %}
                     {% endif %}
                 <form id="message_{{ message.pk }}" method="get" action="{% url 'chat:message_seen'%}">
-
-                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
-
+                    <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
                     {% if message.title == 'Friend Request' %}
                         <input type="submit" class="btn btn-danger message_seen" role="button" value="Delete Request">
                     {% else %}
                         <input type="submit" class="btn btn-danger message_seen" role="button" value="X">
-                        {% endif %}
+                    {% endif %}
                 </form>
                 {% if message.title != "Friend Accepted" and message.title != "Friend Request" %}
                     <button class="btn btn-primary respond">Respond</button>
+                    <br><br>
                     <form method="POST" class="respond-form" action="" style="display: none" enctype="multipart/form-data">
                         {{  form.as_p }}
                         {% csrf_token %}

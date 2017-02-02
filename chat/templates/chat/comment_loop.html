@@ -10,19 +10,30 @@
         {% endfor %}
         var loop = $(".loop_num").val();
         var index = (10 * parseInt(nuzz)) - 10;
+        var times = 0;
         $(".iii").css("padding-left", index + "%");
 
         $(".more-comments").click(function() {
             // TODO: Fix bug that the button reveals comments on the post below it
             // TODO: Make that button doesnt reveal all comments on a posific comment
             // TODO: Implement that button only reveals the next 10 comments and than 10 after
-            var commentShow = $(this).siblings(".comments").serialize();
-            console.log(commentShow);
-            for ( mcomm in commentShow) {
-                pk = mcomm;
-                $("#iii-" + pk).css("display", "block").css("padding-left", index + "%");
+            var pk = $(this).siblings(".comments").val();
+            // console.log(commentShow);
+            if (times % 2 == 0) {
+                $(".comment-of-" + pk).css("display", "block").css("padding-left", index + "%");
+                console.log(pk);
+                $(this).html(
+                        'Hide Old Comments'
+                );
+            } else {
+                $(".comment-of-" + pk).css("display", "none").css("padding-left", index + "%");
+                $(".last-5").css("display", "block").css("padding-left", index + "%");
+                console.log(pk);
+                $(this).html(
+                        'Show Earlier Comments'
+                );
             }
-            $(this).hide();
+            times++;
         });
 
 
@@ -31,12 +42,13 @@
 
 {% last_5_comments comments loop as last_5 %}
 {% if comments|length > 5 %}
-    <button class="btn-warning more-comments">{{ comments|length }} More Comments</button>
-    <input type="hidden" class="length" value="{{ comments|length }}">
-    <input type="hidden" class="comments" value="{{ comments }}">
+    <button class="btn-warning more-comments">Show Earlier Comments</button>
+    {% with comments|first as first_comment %}
+        <input type="hidden" class="comments" value="{{ first_comment.comment.pk }}">
+    {% endwith %}
 {% endif %}
 {% for comment in comments %}
-    <div class="iii" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none"{% endif %}>
+    <div class="iii comment-of-{{ comment.comment.pk }} {% if comment in last_5 %}last-5{% endif %}" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none"{% endif %}>
         <input type="hidden" class="iii-pk" value="{{ comment.pk }}">
     <div class="post">
 
