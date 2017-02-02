@@ -1,18 +1,26 @@
 {% extends "layout.html" %}
 
-{% block title %}Sign Up!{% endblock %}
+{% block title %}{{ title }}!{% endblock %}
 
 {% block content %}
     <div class="col-sm-6 col-sm-offset-3">
-    <h1>Sign Up!</h1>
+    <h1>{{ title }}!</h1>
     <form method="POST" action="" enctype="multipart/form-data">
         {% if message_type == "response" %}
             <p>{{ form.message }}</p>
         {% else %}
             {{  form.as_p }}
+            {% if title == "Update Info" %}
+                <label>Description:</label>
+                <textarea class="form-control" placeholder="describe yourself" name="description" >{{ user.description }} </textarea>
+                <br>
+                <h2>Edit Password</h2>
+                {{ password_form.as_p }}
+            {% endif %}
         {% endif %}
         {% csrf_token %}
-        <input type="submit" class="btn btn-default" value="Save">
+        <br>
+        <input type="submit" class="btn btn-info" value="{{ title }}">
     </form>
     </div>
 {% endblock %}

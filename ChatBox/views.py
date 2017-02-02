@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from wtforms import ValidationError
 
 from ChatBox import forms
 from chat import models
@@ -100,13 +101,18 @@ def admin_sign_up(request):
 
 def sign_up(request):
     """ User could sign up to chat and make account"""
+    title = "Sign Up"
     form = forms.ProfileForm()
     if request.method == "POST":
         form = forms.ProfileForm(request.POST, request.FILES)
         if form.is_valid():
+            username = form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name']
+            if User.objects.filter(username=username):
+                messages.error(request, "Sorry that name or password is allready taken")
+                return render(request, 'profile_form.html', {"form": form, 'title': title})
             profile = form.save(commit=False)
             profile.picture = form.cleaned_data['picture']
-            profile.username = form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name']
+            profile.username = username
             profile.save()
 
             user = User.objects.create_user(
@@ -118,9 +124,54 @@ def sign_up(request):
             new_user = models.Profile.objects.get(username=request.user.username)
             new_user.friends = str(new_user.pk)
             new_user.save()
+
             messages.success(request, "You are all signed up")
             return HttpResponseRedirect(reverse('chat:find_friends'))
-    return render(request, 'profile_form.html', {"form": form})
+    return render(request, 'profile_form.html', {"form": form, "title": title})
+
+
+
+def update_info(request):
+    title = "Update Info"
+    if request.user.is_staff:
+        messages.error("This page is only for users not for staff members")
+        return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+    user = models.Profile.objects.get(username=request.user.username)
+    form = forms.ProfileUpdateForm(instance=user)
+    password_form = forms.UpdatePasswordForm(request.POST or None)
+    user_info = request.user
+    if request.method == "POST":
+        form = forms.ProfileUpdateForm(request.POST, request.FILES, instance=user)
+
+        description = request.POST.get("description")
+        print(description)
+        if form.is_valid() and password_form.is_valid():
+            username = form.cleaned_data['first_name'] + " " + form.cleaned_data['last_name']
+            if User.objects.filter(username=username) and user_info.username != username:
+                messages.error(request, "Sorry that name or password is allready taken")
+                return render(request, 'profile_form.html', {"form": form, 'title': title})
+            else:
+                user_info.username = username
+                user_info.email = form.cleaned_data['email']
+                if password_form.is_valid():
+                    user_info.set_password(password_form.cleaned_data['password'])
+                user_info.save()
+
+                data = form.save(commit=False)
+                if description or user.description:
+                    data.description = description
+                data.picture = form.cleaned_data['picture']
+                data.username = username
+                data.save()
+                new_user_info = authenticate(
+                    username=data.username,
+                    email=data.email
+                    # password=password_form.cleaned_data['password']
+                )
+                login(request, new_user_info)
+                messages.success(request, "Info Updated")
+                return HttpResponseRedirect(reverse('chat:friends'))
+    return render(request, 'profile_form.html', {"form": form, 'password_form': password_form, 'title': title, 'user': user})
 
 
 def logout_view(request):

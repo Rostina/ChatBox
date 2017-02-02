@@ -3,19 +3,18 @@
 
 <div class="thumbnail col-sm-6 col-sm-offset-1" id="message-box-{{ message.pk }}">
             <div class="caption ">
+
                 {% if message.title == "Friend Request" %}
+                    <h3>Friend Request from {{ message.from_user }}</h3>
+                    <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
                     <form id="friend_request_{{ message.pk }}" method="get" action="{% url 'chat:confirm_friend'%}">
 
                         <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
-                        <h3>Friend Request from {{ message.from_user }}</h3>
-                        <p>{{ message.from_user }} requested that you should be his friend. BY accepting You will see all his chats and he will yours</p>
+
                         <input type="submit" class="btn btn-primary confirm_friend" role="button" value="Accept Friend Reqeust!">
                     </form>
                 {% else %}
-                    <form id="message_{{ message.pk }}" method="get" action="{% url 'chat:message_seen'%}">
-
-                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
-                        {% if message.title == "Friend Accepted" %}
+                    {% if message.title == "Friend Accepted" %}
                             <h3>Friend Request accepted from {{ message.from_user }}</h3>
                             <p>{{ message.from_user }} accepted your friend requested. Now you will see all his chats and he will see yours.</p>
                         {% else %}
@@ -25,13 +24,46 @@
                             {% endif %}
                             <p>from <strong><a href="#">{{ message.from_user }}</a></strong></p>
                         {% endif %}
-                        <input type="submit" class="btn btn-danger message_seen" role="button" value="X">
-                    </form>
-                    <form method="get" action="{% url 'respond' %}">
-                        <input type="hidden" class="message_pk" value="{{ message.from_user }}" name="pk">
-                        <input type="submit" class="btn btn-primary" value="Respond">
-                    </form>
+                    {% endif %}
+                <form id="message_{{ message.pk }}" method="get" action="{% url 'chat:message_seen'%}">
 
+                        <input type="hidden" class="message_pk" value="{{ message.pk }}" name="message_pk">
+
+                    {% if message.title == 'Friend Request' %}
+                        <input type="submit" class="btn btn-danger message_seen" role="button" value="Delete Request">
+                    {% else %}
+                        <input type="submit" class="btn btn-danger message_seen" role="button" value="X">
+                        {% endif %}
+                </form>
+                {% if message.title != "Friend Accepted" and message.title != "Friend Request" %}
+                    <button class="btn btn-primary respond">Respond</button>
+                    <form method="POST" class="respond-form" action="" style="display: none" enctype="multipart/form-data">
+                        {{  form.as_p }}
+                        {% csrf_token %}
+                        <input type="submit" class="btn btn-primary" value="Send Message">
+                    </form>
+                {% elif message.title == "Friend Accepted" %}
+                    <form class="" style="display: inline-flex;" method="POST" action="{% url 'chat:post_comment' %}"
+                                                enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="text"  id="text" style="width: 100%" placeholder="text" value="{{ request.GET.text }}"/>
+                        <div class="image-field">
+                        {# // where image input will be placed in jquery code#}
+                        </div>
+                        <button class="btn-danger hidden-items image-link">X</button>
+                        <button class="btn-info image-link" id="image-button"><i
+                                class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+                        </button>
+                        <input type="hidden" name="username" value="{{ message.from_user }}">
+                        <input type="hidden" class="type" name="type" value="private">
+                        <input type="submit" class="btn btn-primary" value="Start Chat with {{ message.from_user }}"/>
+                    </form>
                 {% endif %}
+
+
+
+
+
+
             </div>
             </div>

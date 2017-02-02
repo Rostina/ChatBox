@@ -16,13 +16,32 @@
     {% endif %}
     {% if request.user.is_staff %}
          <p>Admin they are <strong>{{ users_friends }}</strong> users</p>
-    {% elif users > 0 %}
+    {% else %}
+        <h3>Here is your info</h3>
+        <div class="thumbnail col-sm-8">
+            <div class="caption">
+                <img src="{{ user.picture.url }}" class="img-responsive" />
+                <a href="{% url 'chat:friend_detail' pk=user.pk%}"><h1>{{ user }}</h1></a>
+                <p>Phone number: {{ user.phone }}</p>
+                <p>Email: {{ user.email }}</p>
+                <p>Gender: {{ user.gender }}</p>
+                <p>Birthday: {{ user.birthday }}</p>*
+                {% if user.description %}
+                    <h3 style="color: gold">Description:  </h3>
+                <p>{{ user.description }}</p>
+                {% endif %}
+                <a href="{% url 'update_info' %}" class="btn btn-primary">Update</a>
+            </div>
+        </div>
+    {% endif %}
+    </div>
+    {% if users > 0 %}
         <p>You have <strong>{{ users_friends }}</strong> friends</p>
     {% endif %}
+    <h3 style="display: block">Friends</h3>
     {% for friend in friends %}
         {% if friend.username != "ChatBox staff" and friend.username != "No One" and friend.username != "d d" %}
-        <div class="col-sm-12">
-            <div class="thumbnail">
+            <div class="thumbnail col-sm-8">
                 <div class="caption">
                     <img src="{{ friend.picture.url }}" class="img-responsive" />
                     <a href="{% url 'chat:friend_detail' pk=friend.pk%}"><h1>{{ friend }}</h1></a>
@@ -30,16 +49,41 @@
                     <p>Email: {{ friend.email }}</p>
                     <p>Gender: {{ friend.gender }}</p>
                     <p>Birthday: {{ friend.birthday }}</p>
+                    {% if friend.description %}
+                        <h3 style="color: gold">Description:  </h3>
+                        <p>{{ friend.description }}</p>
+                    {% endif %}
                     {% block friend_request %}{% endblock %}
+                    <form method="get" action="{% url 'chat:messages_by_user' %}">
+                        <input type="hidden" name="username" value="{{ friend.username }}">
+                        <h3><input class="btn-default" type="submit" value="See messages {{ friend.username }}"</h3>
+                    </form>
+                    <br/><br/>
+                    <form class="" style="display: inline-flex;" method="POST" action="{% url 'chat:post_comment' %}"
+                          enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="text"  id="text" style="width: 100%" placeholder="text" value="{{ request.GET.text }}"/>
+                        <div class="image-field">
+                        {# // where image input will be placed in jquery code#}
+                        </div>
+                        <button class="btn-danger hidden-items image-link">X</button>
+                        <button class="btn-info image-link" id="image-button"><i
+                                class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+                        </button>
+                        <input type="hidden" name="username" value="{{ friend.username }}">
+                        <input type="hidden" class="type" name="type" value="private">
+                        <input type="submit" class="btn btn-primary" value="Start Chat with {{ friend.username }}"/>
+                    </form>
+
                     <script>
                         // TODO: There's a bug that when button pressed it gets 404
                         // TODO: if search returns nothing return message that we couldnt find friend
                     </script>
                 </div>
             </div>
-        </div>
-    </div>
+
         {% endif %}
     {% endfor %}
+    </div>
     {% include "chat/ajax.html" %}
 {% endblock %}

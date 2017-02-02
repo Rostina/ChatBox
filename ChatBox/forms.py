@@ -38,6 +38,57 @@ class RespondForm(forms.ModelForm):
         cleaned_data = super().clean()
 
 
+class UpdatePasswordForm(forms.Form):
+    # old_password = forms.CharField(widget=forms.PasswordInput)
+    password = forms.CharField(widget=forms.PasswordInput, required=False)
+    verify_password = forms.CharField(max_length=20, required=False, label="Please verify your password",
+                                      widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        verify_password = cleaned_data.get('verify_password')
+
+        if password != verify_password:
+            raise forms.ValidationError("You must enter the same password in both fields")
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    now = datetime.now()
+    start = now.year
+    end = now.year - 120
+    years = []
+    while start > end:
+        years.append(start)
+        start -= 1
+
+    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years))
+    class Meta:
+        model = Profile
+        fields = ["first_name", "last_name", "phone",
+              "email", "birthday", "gender", "picture"
+              ]
+
+        honeypot = forms.CharField(required=False,
+                                   widget=forms.HiddenInput,
+                                   label="leave empty",
+                                   validators=[must_be_empty],
+                                   )
+
+        def clean(self):
+            cleaned_data = super().clean()
+            email = cleaned_data.get('email')
+            username = cleaned_data.get('first_name') + " " + cleaned_data.get('last_name')
+            birthday = cleaned_data.get('birthday')
+
+            if username == "ChatBox staff" or username == "No One":
+                raise forms.ValidationError("sorry that username is reserved to the ChatBox staff")
+
+            if birthday > datetime.now().date():
+                raise forms.ValidationError("This date has not yet happened!")
+
+
+
 class ProfileForm(forms.ModelForm):
     now = datetime.now()
     start = now.year
@@ -80,11 +131,10 @@ class ProfileForm(forms.ModelForm):
 
         if username == "ChatBox staff" or username == "No One":
             raise forms.ValidationError("sorry that username is reserved to the ChatBox staff")
-        elif (Profile.objects.filter(username=username).exists() and Profile.objects.filter(password=password).exists()
-            or Profile.objects.filter(username=username).exists()):
+        elif Profile.objects.filter(username=username).exists():
             raise forms.ValidationError(
-                """Your name and/or password is already used by another person (different people)
-                Change a little your name or password"""
+               """Your name and/or password is already used by another person (different people)
+               Change a little your name or password"""
             )
 
         if birthday > datetime.now().date():
@@ -107,4 +157,5 @@ class LoginForm(forms.Form):
         name = cleaned_data.get('name')
         email = cleaned_data.get('email')
         password = cleaned_data.get('password')
+
 

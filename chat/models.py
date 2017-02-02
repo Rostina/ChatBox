@@ -19,6 +19,7 @@ class Profile(models.Model):
     email = models.EmailField(max_length=150)
     birthday = models.DateTimeField()
     gender = models.CharField(max_length=30, choices=GENDERCHOICES)
+    description = models.TextField(null=True, blank=True)
     friends = models.CharField(
         max_length=100000,
         default="",

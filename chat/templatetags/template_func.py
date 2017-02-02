@@ -61,6 +61,16 @@ def has_comments(post, distance):
     return comments
 
 
+# @register.assignment_tag()
+# def messages_I_sent(my_messages):
+#     messages_to = []
+#     for message in my_messages:
+#         username = message.private_messages.username
+#         if username not in messages_to:
+#             messages_to.append(username)
+#     return messages_to
+
+
 @register.assignment_tag()
 def who_sent_messages(private_messages):
     messages_from = {}

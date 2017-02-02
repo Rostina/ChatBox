@@ -11,6 +11,7 @@ from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView
 
+from ChatBox.forms import ContactStaffForm
 from chat import models, forms
 
 
@@ -301,16 +302,35 @@ def messages_list(request):
         user = models.Profile.objects.get(username="ChatBox staff")
     else:
         user = models.Profile.objects.get(username=u.username)
-    messages = models.FriendMessage.objects.filter(to_user=user.pk).exclude(title="Friend Request").exclude(title="Friend Accepted")
+    user_messages = models.FriendMessage.objects.filter(to_user=user.pk).exclude(title="Friend Request").exclude(title="Friend Accepted")
     friend_accepted = models.FriendMessage.objects.filter(to_user=user.pk, title="Friend Accepted")
     friend_request = models.FriendMessage.objects.filter(to_user=user.pk, title="Friend Request")
     private_messages = models.Chat.objects.filter(private_message=user).order_by('user')
+    # my_messages = models.Chat.objects.filter(share="Private Message", user=user).exclude(private_message__in=private_messages.user)
+    form = ContactStaffForm()
+    if request.method == "POST":
+        form = ContactStaffForm(request.POST)
+        if form.is_valid():
+            admin = models.Profile.objects.get(username="ChatBox staff")
+            user = models.Profile.objects.get(username=request.user.username)
+            message = form.save(commit=False)
+            message.from_user = user
+            message.to_user = admin
+            message.save()
+            messages.success(request, "Message was received by our staff. We will contact you soon")
+            models.FriendMessage.objects.create(
+                to_user=user,
+                from_user=admin,
+                title="We got your " + message.title + " message. We will contact you soon addressing your message."
+            )
     return render(request, 'chat/messages.html', {
-        'user_messages': messages,
+        'user_messages': user_messages,
+        # 'my_messages': my_messages,
         'friend_request': friend_request,
         'friend_accepted': friend_accepted,
         'private_messages': private_messages,
-        'user': user
+        'user': user,
+        'form': form
     })
 
 
@@ -370,7 +390,12 @@ def post_comment(request):
     pk = request.POST.get("pk")
     type = request.POST.get("type")
     if type == "private":
-        to = models.Profile.objects.get(pk=pk)
+        if pk:
+            to = models.Profile.objects.get(pk=pk)
+        else:
+            username = request.POST.get("username")
+            print(username)
+            to = models.Profile.objects.get(username=username)
     else:
         post = models.Chat.objects.get(pk=pk)
     form = forms.CommentForm(request.POST, request.FILES)
@@ -398,4 +423,6 @@ def post_comment(request):
             'comment': comment.text
         })
     # messages.error(request, "Comment need either a picture or a comment")
+    if type == "private":
+        return HttpResponseRedirect("/chat/messages/users/?username=" + username)
     return HttpResponseRedirect(request.META.get("HTTP_REFERER"))

@@ -3,11 +3,18 @@
 {% load template_func %}
 
 <script>
-    {% block javascript %}
-
-
-
-    {% endblock %}
+{% block javascript %}
+    $(".respond").click(function() {
+        $respondForm =  $(this).siblings(".respond-form");
+        if ($respondForm.css("display") == "none") {
+            $(this).html("Hide Form");
+            $respondForm.show();
+        } else {
+            $(this).html("Respond");
+            $respondForm.hide();
+        }
+    });
+{% endblock %}
 </script>
 
 {% block title %}Messages{% endblock %}
@@ -22,6 +29,7 @@
                 </form>
 
         {% endfor %}
+        <h3 ><button class="bg-success"><a href="{% url 'chat:friends' %}" >See other messages</a></button></h3>
         <div class="message-link-seperator">
 
         {% if user_messages %}
@@ -33,6 +41,7 @@
             {% endfor %}
             {% for message in user_messages %}
                 {% include "chat/message_loop.html" %}
+
             {% endfor %}
 
         {% elif messages_from  %}{% else %}

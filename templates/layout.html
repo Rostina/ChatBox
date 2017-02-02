@@ -41,11 +41,22 @@
                 <li class="has-submenu"><a href="{% url 'chat:friends' %}">Friends</a></li>
                 <li class="has-sumenu"><a href="{% url 'chat:post' %}">Post a message</a></li>
                 <li class="has-sumenu"><a href="{% url 'contact-us' %}">Contact Us</a></li>
+                <li class="dropdown">
+                    <a href="#" data-target="#" data-toggle="dropdown" class="dropdown-toggle message-dropdown">Messages <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Inbox</a></li>
+                        <li><a href="#">Draft</a></li>
+                        <li><a href="#">Sent Items</a></li>
+                        <li><a href="#">Sent Items</a></li>
+                    </ul>
+                </li>
+
                 <form class="navbar-form navbar-left" method="get" name="tabForm">
                     <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}"/>
                     <input type="button" class="search-button btn btn-primary" value="Search Posts" onclick="searchButton();"/>
                     <input type="button" style="display:none" id="submit-find-friends" class="btn btn-info" value="Find Friends" onclick="findFriends();"/>
                 </form>
+
             {% else %}
                 <li class="has-submenu"><a href="{% url 'sign_up' %}">Sign up</a></li>
                 <li class="has-submenu"><a href="{% url 'login' %}">Login</a></li>
@@ -109,6 +120,19 @@
         document.tabForm.submit();
     }
     $(document).ready(function () {
+        $(".message-dropdown").click(function() {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'chat:messages' %}",
+                success: function(data) {
+                    console.log(data);
+
+                },
+                error: function(error) {
+                    alert(error);
+                }
+            })
+        });
         {%  block javascript %}{%  endblock %}
     });
 </script>
