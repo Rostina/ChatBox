@@ -1,1 +1,1 @@
-web: gunicorn --pythonpath ChatBox ChatBox.wsgi --log-file -
+web: gunicorn --pythonpath ChatBox ChatBox.deploy --log-file -
