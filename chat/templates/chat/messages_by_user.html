@@ -1,6 +1,9 @@
 {% extends 'layout.html' %}
 
+<!-- page for Private Chat -->
+
 {% block title %}Chat with {{ friend }}{% endblock %}
+
 
 <script>
 {% block javascript %}
@@ -10,6 +13,7 @@
 
 {% block content %}
     {% for message in user_messages %}
+        <!--box of message -->
         <div class="thumbnail user-message" style="{% if message.user == user %}float: right;{% else %}float: left'{% endif %}">
         <div class="caption">
             <h3>
@@ -28,17 +32,20 @@
         </div>
         </div>
     {% endfor %}
+        <!-- for new ajax posts -->
         <div class="new-post"></div>
-        <form class="comment-form" style="display: inline-flex;" method="POST" action="{% url 'chat:post_comment' %}"
+
+        <!-- comment form -->
+        <form class="comment-form" style="display: inline;" method="POST" action="{% url 'chat:post_comment' %}"
               enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="text" name="text"  id="text" style="width: 100%" placeholder="text" value="{{ request.GET.text }}"/>
+            <textarea class="user-message" name="text" rows="3" id="text" placeholder="text"></textarea>
             <div class="image-field">
-                {# // where image input will be placed in jquery code#}
+                <!-- where image input will be placed in jquery code -->
             </div>
             <button class="btn-danger hidden-items image-link">X</button>
             <button class="btn-info image-link" id="image-button"><i
-                    class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+                    class="fa fa-camera-retro fa-1.5x camera-icon" aria-hidden="true"></i>
             </button>
             <input type="hidden" id="pk" name="pk" value="{{ friend.pk }}">
             <input type="hidden" class="type" name="type" value="private">

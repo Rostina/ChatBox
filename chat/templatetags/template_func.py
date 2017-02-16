@@ -4,9 +4,12 @@ from chat import models
 
 register = template.Library()
 
+# posts
+
 
 @register.assignment_tag()
 def post_filter(post, user, friends):
+    """  filters appropriate posts on the main page """
     if friends == "admin":
         return True
     elif post.share == 'Public' or post.user == user:
@@ -32,17 +35,30 @@ def post_filter(post, user, friends):
         return False
 
 
+# comments
+
 @register.assignment_tag()
-def share_button_filter(post, user):
-    if post.share == 'Public' or post.user == user:
-        return False
-    for sharer in post.users.all():
-        if sharer == user:
-            return False
-    return True
+def has_comments(post, distance):
+    """ returns comment on post or comments on comments """
+    comments = models.Chat.objects.filter(comment=post).filter(distance_from_sourse=distance).order_by("time_posted")
+    return comments
+
+
+@register.inclusion_tag('chat/comment_loop.html')
+def comments_list(comments):
+    """ return comments on post to be used in comment_loop.html """
+    return {'comments': comments}
+
+
+@register.assignment_tag()
+def new_distance(distance):
+    """ adds one to distance occording to the post """
+    return distance + 1
+
 
 @register.assignment_tag()
 def last_5_comments(comments, loop):
+    """ returns the last 5 comments posted """
     length = len(comments) - 5
     # loop = int(loop) + 1
     if length < 0:
@@ -50,29 +66,36 @@ def last_5_comments(comments, loop):
     return comments[length:]
 
 
-@register.assignment_tag()
-def new_distance(distance):
-    return distance + 1
-
+# like and share button
 
 @register.assignment_tag()
-def has_comments(post, distance):
-    comments = models.Chat.objects.filter(comment=post).filter(distance_from_sourse=distance).order_by("-time_posted")
-    return comments
+def share_button_filter(post, user):
+    """ Only shows button to share post if Post.is Friend and not shared by the person yet """
+    if post.share == 'Public' or post.user == user:
+        return False
+    for sharer in post.users.all():
+        if sharer == user:
+            return False
+    return True
 
 
-# @register.assignment_tag()
-# def messages_I_sent(my_messages):
-#     messages_to = []
-#     for message in my_messages:
-#         username = message.private_messages.username
-#         if username not in messages_to:
-#             messages_to.append(username)
-#     return messages_to
+@register.assignment_tag()
+def like_list(likes):
+    """returns a list of pk's of all the persons friends"""
+    liked_list = likes.split(',')
+    try:
+        liked = [int(x) for x in liked_list]
+        return liked
+    except:
+        return False
 
+
+# messages.html
 
 @register.assignment_tag()
 def who_sent_messages(private_messages):
+    """ returns a dict that has all the names of people that user has a chat with
+    and the number of new messages from that person """
     messages_from = {}
     time = ""
     add = True
@@ -80,11 +103,12 @@ def who_sent_messages(private_messages):
         username = message.user.username
         if time != message.user:
             try:
-                time = models.Chat.objects.filter(private_message=message.user, user=message.private_message).latest('time_posted')
+                time = models.Chat.objects.filter(private_message=message.user, user=message.private_message).latest(
+                    'time_posted'
+                )
                 add = False
             except:
                 add = True
-            print("TIME: " + time.text)
         if message.time_posted > time.time_posted and add is False:
 
             if username in messages_from:
@@ -102,19 +126,15 @@ def who_sent_messages(private_messages):
     return messages_from
 
 
-@register.inclusion_tag('chat/comment_loop.html')
-def comments_list(comments):
-    return {'comments': comments}
+# friends.html
 
-
-"""
-
-for num in numbers:
-    if num:
-        lop(n)
-
-def lop(numbers):
-    for num in numbers:
-        print("YESSSSSSSSS")
-        if n:
-            lop(n)"""
+@register.assignment_tag()
+def friendly_phone_format(phone):
+    """ makes the phone number is user profiles to look more frienly with - between like: 1-888-888-8888 """
+    phone_number = []
+    for index in range(1, len(phone)+1):
+        if index > 4:
+            if (index - 4) % 3 == 1:
+                phone_number.insert(0, "-")
+        phone_number.insert(0, phone[-index])
+    return "".join(phone_number)

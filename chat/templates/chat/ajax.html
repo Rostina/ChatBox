@@ -1,15 +1,21 @@
 {% load staticfiles %}
 
+<!-- all the ajax requests. Its in HTML page so it could use Django templatetags -->
+
 <script>
-    // chatbox.html
+
     $(document).ready(function() {
+
+     // chatbox.html
+
+        // this ajax submits the comment form
     $(".submit-comment").click(function (event) {
         event.preventDefault();
         var formData = $(this).parent(".comment-form").serialize();
-        var $form = $(this).parent(".comment-form");
+        // var $form = $(this).parent(".comment-form");
         var image = $(this).siblings('.image-field').children("#image").val();
         var text = $(this).siblings("#text").val();
-        var type = $(this).siblings(".type").val();
+        // var type = $(this).siblings(".type").val();
         console.log(formData);
         if (image) {
             alert("Need to reload to be able to save image");
@@ -23,14 +29,13 @@
                 url: "{% url 'chat:post_comment' %}",
                 data: formData,
                 success: function (data) {
-                    console.log(data);
                     if (type === "private") {
                         newPost = '<div class="thumbnail user-message" style="float: right;">';
                         newPost += '<div class="caption"><h3>';
                         newPost += '<img src="{{ user.picture.url }}" class="profile_pic"/>';
                         newPost += ' Post <small> from <a href="" class="name">{{ user }}</a>';
                         newPost += '</small></h3>';
-                        newPost += '<p>' + data.comment + '</p>'
+                        newPost += '<p>' + data.comment + '</p>';
                         newPost += '<p></p>';
                     } else {
                         $form.css("display", "none");
@@ -43,7 +48,7 @@
 
                 },
                 error: function (error) {
-                    alert(error.status + ": " + error.statusText);
+                    alert("Didn't work");
                     $(this).parent(".comment-form").submit();
                 }
             });
@@ -54,6 +59,8 @@
 
 
     // comment_loop.html
+
+    // Like button
     $(".like-unlike-form").submit(function (event) {
         // likes and likes posts
         event.preventDefault();
@@ -63,9 +70,16 @@
             data: data,
             url: "{% url 'chat:like/unlike' %}",
             success: function (data) {
-                alert("This is a flash message: " + data.flash_message);
+                $("#like-button-"+data.post_pk).children(".like-button-icon").remove();
+
+                if (data.flash_message == "liked!") {
+                    $("#like-form-"+data.post_pk).children(".like-text").text("Unlike");
+                    $("#like-button-"+data.post_pk).html("<i class='fa fa-thumbs-up like-button-icon' aria-hidden='true'></i>");
+                } else {
+                    $("#like-form-"+data.post_pk).children(".like-text").text("Like");
+                    $("#like-button-"+data.post_pk).html('<i class="fa fa-thumbs-o-up like-button-icon" aria-hidden="true"></i>');
+                }
                 if (data.likes > 0) {
-                    console.log(data.post_pk + '  ' + data.likes);
                     $("#like-form-"+data.post_pk).siblings(".likes").css("display", "inline").text(data.likes + " likes");
                 } else {
                     $("#like-form-"+data.post_pk).siblings(".likes").text("");
@@ -74,11 +88,11 @@
             error: function (error) {
                 alert("didn't work");
                 console.log(error.status + ": " + error.statusText);
-                // $(".like-unlike-form").submit();       This will recall this function again and again making a never ending loop
             }
         })
     });
 
+    // share button. shares the post
     $('.share-form').submit(function (event) {
         // s ahres the post
         event.preventDefault();
@@ -94,7 +108,6 @@
                 newText += '<img src="{{ user.picture.url }}" class="profile_pic"/>';
                 newText += '<a href="" class="name">{{ user }}</a> shared <strong>' + data.post_title + '</strong>';
                 newText += "</h5>";
-                alert(newText);
                 $("#new-ajax-sharer-" + data.post_pk).html(newText);
             },
             error: function (error) {
@@ -105,62 +118,72 @@
     });
 
 
-        // friends.hyml - find_friends.html
+        // friends.html - find_friends.html
+
+        // Asks for friend request
         $(".friend_request").click(function(event) {
             event.preventDefault();
-            var numbbb = $(this).siblings(".pk").val();
+            var pk = $(this).siblings(".pk").val();
             var data = {
-                friend: numbbb,
+                friend: pk
             };
             $.ajax({
                 type: "GET",
                 url: "{% url 'chat:friend_request' %}",
                 data: data,
                 success: function (data) {
-                    $("#friend_" + numbbb + " .friend_request").fadeOut();
+                    $("#friend_" + pk + " .friend_request").fadeOut();
                     message = "Friend Request sent!";
-                    $("#friend-request-" + numbbb).html(message);
-                    $("#friend_" + numbbb).css({'color': 'chocolate'});
+                    $("#friend-request-" + pk).html(message);
+                    $("#friend_" + pk).css({'color': 'chocolate'});
                 },
                 error: function (responce, error) {
-                    alert("Didn' t Go");
-                    $("#friend_" + numbbb).submit();
+                    alert("Didn't Go");
+                    $("#friend_" + pk).submit();
                 }
-
             })
-
         });
 
 
         // messages.html
+
+        // deletes message
         $(".message_seen").click(function(event) {
             event.preventDefault();
-            var numbbb = parseInt($(this).prevAll(".message_pk").val());
+            var pk = parseInt($(this).prevAll(".message_pk").val());
             var data = {
-                message_pk: numbbb,
+                message_pk: pk,
             };
             $.ajax({
                 type: "GET",
                 url: "{% url 'chat:message_seen' %}",
                 data: data,
                 success: function (data) {
-                    $("#message_" + numbbb).parents(".message_box").fadeOut();
-                    $("#message-box-" + numbbb).fadeOut();
+                    $("#message_" + pk).parents(".message_box").fadeOut();
+                    $("#message-box-" + pk).fadeOut();
                 },
                 error: function (responce, error) {
                     alert("Didn' t Go");
-                    $("#message_" + numbbb).submit();
+                    $("#message_" + pk).submit();
                 }
-
             })
         });
 
+        // respond to message
         $(".respond-form").submit(function (event) {
             event.preventDefault();
             data = $(this).serialize();
+            var message = $(this).children("#id_message").val();
+            if (message === "") {
+                alert("Message not sent you need add a message");
+            } else {
             $.ajax({
                 type: "POST",
-                url: "{% url 'chat:messages' %}",
+                {% if request.user.is_staff %}
+                    url: "{% url 'chat:messages' %}",
+                {% else %}
+                    url: "{% url 'chat:admin_respond' %}",
+                {% endif %}
                 data: data,
                 success: function(data) {
 
@@ -171,9 +194,10 @@
                     alert("Couldn't be sent");
                 }
             })
+            }
         });
 
-
+        // Confirms friend
         $(".confirm_friend").click(function(event) {
             event.preventDefault();
             var numbbb = parseInt($(this).prevAll("input[type='hidden']").val());

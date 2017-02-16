@@ -1,115 +1,131 @@
 {% load template_func %}
 
-<script>
+<!-- comments on a post or comments -->
+
+<script xmlns="http://www.w3.org/1999/html">
     {% block javascript %}
-        var nuzz = "";
-        //var amount = $(this).next().val();
-        //amount -= 5;
+        var distance;
         {% for comment in comments|slice:"1" %}
-            nuzz = "{{ comment.distance_from_sourse }}";
+            distance = "{{ comment.distance_from_sourse }}";
         {% endfor %}
         var loop = $(".loop_num").val();
-        var index = (10 * parseInt(nuzz)) - 10;
-        var times = 0;
+        var index = (10 * parseInt(distance)) - 10;
+
+        // sets padding
         $(".iii").css("padding-left", index + "%");
 
+        // shows all comments
         $(".more-comments").click(function() {
-            // TODO: Fix bug that the button reveals comments on the post below it
-            // TODO: Make that button doesnt reveal all comments on a posific comment
-            // TODO: Implement that button only reveals the next 10 comments and than 10 after
             var pk = $(this).siblings(".comments").val();
-            // console.log(commentShow);
-            if (times % 2 == 0) {
-                $(".comment-of-" + pk).css("display", "block").css("padding-left", index + "%");
-                console.log(pk);
-                $(this).html(
-                        'Hide Old Comments'
-                );
-            } else {
-                $(".comment-of-" + pk).css("display", "none").css("padding-left", index + "%");
-                $(".last-5").css("display", "block").css("padding-left", index + "%");
-                console.log(pk);
-                $(this).html(
-                        'Show Earlier Comments'
-                );
-            }
-            times++;
+            $(".comment-of-" + pk).css("display", "block").css("padding-left", index + "%");
+            $(this).siblings(".less-comments").css("display", "inline");
+            $(this).css("display", "none");
         });
+
+        // hides all comments besides the last 5
+        $(".less-comments").click(function() {
+            var pk = $(this).siblings(".comments").val();
+            $(".comment-of-" + pk).css("display", "none").css("padding-left", index + "%");
+            $(".last-5").css("display", "block").css("padding-left", index + "%");
+            $(this).siblings(".more-comments").css("display", "inline");
+            $(this).css("display", "none");
+        });
+
 
 
     {% endblock %}
 </script>
 
+<!-- templateta that returns the last 5 comments that where posted -->
 {% last_5_comments comments loop as last_5 %}
+
+<!-- buttons to show and hide all comments (besides 5) -->
 {% if comments|length > 5 %}
-    <button class="btn-warning more-comments">Show Earlier Comments</button>
+    <button class="btn-info more-comments comment-button-margin" style="margin-bottom: 20px;">Show Earlier Comments</button>
+    <button class="btn-success less-comments comment-button-margin" style="display: none;">Hide Earlier Comments</button>
     {% with comments|first as first_comment %}
         <input type="hidden" class="comments" value="{{ first_comment.comment.pk }}">
     {% endwith %}
 {% endif %}
+
 {% for comment in comments %}
-    <div class="iii comment-of-{{ comment.comment.pk }} {% if comment in last_5 %}last-5{% endif %}" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none"{% endif %}>
+    <!-- comment -->
+    <div class="iii comment-of-{{ comment.comment.pk }} {% if comment in last_5 %}last-5{% endif %}" id="iii-{{ comment.pk }}" {% if comment not in last_5 %}style="display: none;"{% endif %}>
         <input type="hidden" class="iii-pk" value="{{ comment.pk }}">
     <div class="post">
 
         <p>
             <img src="{{ comment.user.picture.url }}" class="profile_pic"/>
-            <a href="" class="name">{{ comment.user }}</a> {{ comment.text }}
+            <a href="" class="name">{{ comment.user }}</a> {% if comment.text|wordcount < 25%}{{ comment.text }}
+                {% elif not comment.image %}<p>{{ comment.text|linebreaks }}</p>{% endif %}
             {% if not comment.image %}
                 <button class="reply">Reply</button>
-{#                <button class="like-button">Like/Unlike</button>#}
 
             {% endif %}
         </p>
         {% if comment.image %}
-            <img src="{{ comment.image.url }}" class="img-responsive"/>
+            <br>
+            <img src="{{ comment.image.url }}" class="img-responsive comment-image" />
+            <br>
+            {% if comment.text|wordcount >= 25 %}
+                <p>{{ comment.text|linebreaks }}</p>
+            {% endif %}
             <p>
-{#                <button class="like-button">Like/Unlike</button>#}
                 <button class="reply">Reply</button>
             </p>
         {% endif %}
 
+        <!-- Not used anymore delete -->
         <p class="likes" style="display: none">{{ comment.amount_likes }} likes </p>
+
+        <!-- like button not operation anymore -->
         {% if request.user == False %}
-        <form method="post" class="like-unlike-form" id="like-form-{{ comment.pk }}"
+            {% like_list comment.likes as liked_list %}
+        <form method="post" class="like-unlike-form comment-button-margin" id="like-form-{{ comment.pk }}"
               action="{% url 'chat:like/unlike' %}">
             {% csrf_token %}
             <input type="hidden" name="pk" class="pk" value="{{ comment.pk }}">
             <input type="hidden" name="like-amount" class="like-amount" value="{{ comment.amount_likes}}">
-            <input type="submit" class="like" value="Like/unlike">
+            <button type="submit" class="like" value="Like/unlike">
+                <i class="fa {% if user.pk in liked_list %}fa-thumbs-up{% else %}fa-thumbs-o-up{% endif %} like-button-icon" aria-hidden="true"></i>
+            </button>
+            <p class="like-text">{% if user.pk in liked_list %}Unlike{% else %}Like{% endif %}</p>
         </form>
         {% endif %}
 
+        <!-- comment form -->
         <form class="form-inline comment-form reply-form" id="comment-form-{{ comment.pk }}" method="POST"
               action="{% url 'chat:post_comment' %}"
               enctype="multipart/form-data" style="display: none;">
             {% csrf_token %}
-            <input type="text" name="text" id="text" placeholder="text"
-                   value="{{ request.GET.text }}"/>
+            <textarea name="text" class="reply-text-form" id="text" placeholder="text"></textarea>
             <div class="image-field">
                 {# // image input goes here added in jquery when press the camera button #}
             </div>
             <button class="btn-danger hidden-items image-link">X</button>
             <button class="btn-info image-link" id="image-button">
-                <i class="fa fa-camera-retro fa-1.5x image-link" aria-hidden="true"></i>
+                <i class="fa fa-camera-retro fa-1.5x camera-icon" aria-hidden="true"></i>
             </button>
             <input type="hidden" name="pk" id="pk" value="{{ comment.pk }}">
             <input type="hidden" class="type" name="type" value="public">
-            <input type="submit" class="btn btn-primary submit-comment" value="Reply"/>
+            <input type="submit" class="btn btn-primary submit-comment comment-button-margin" value="Reply"/>
         </form>
+
+        <!-- show no comment -->
         <div class="iii new-post" id="new-post-{{ post.pk }}"></div>
     </div>
 
-
+        <!-- returns comments from this post -->
         {% new_distance comment.distance_from_sourse as distance %}
         {% has_comments comment distance as comments %}
         {% if comments %}
 
-            <button class="btn-info show_replies">Show replies</button>
+            <!-- button to show reples on the comment -->
+            <button class="btn-info show_replies comment-button-margin">Show replies</button>
 
-
+            <!-- button to hide replies on the comment -->
             <div class="hidden-items">
-                <button class="btn-success hide-replies">Hide replies</button>
+                <button class="btn-success hide-replies comment-button-margin">Hide replies</button>
                 {% comments_list comments %}
             </div>
         {% endif %}

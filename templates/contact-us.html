@@ -1,14 +1,18 @@
 {% extends "layout.html" %}
 
+<!-- Form to contact the ChatBox staff -->
+
 {% block title %}contact us{% endblock %}
 
 {% block content %}
-    <div class="col-sm-6 col-sm-offset-3">
-        <h1>{% if message_type == "contact_us" %}Contact us with your issues{% else %}
+    <div class="col-sm-10 col-sm-offset-1">
+        <h1 class="no-margin">{% if message_type == "contact_us" %}Send a message to out team{% else %}
             Respond{% endif %}
         </h1>
         <form method="POST" action="" enctype="multipart/form-data">
-            {{  form.as_p }}
+            <h4>{{ form.title }}</h4>
+            <label for="id_message">Message: </label>
+            <p>{{ form.message }}</p>
             {% csrf_token %}
             <input type="submit" class="btn btn-primary" value="Send Message">
         </form>

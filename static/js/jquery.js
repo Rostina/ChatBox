@@ -1,7 +1,9 @@
 /**
- * Created by yosef on 12/13/2016.
+ * Created by Yosef Fastow on 12/13/2016.
  */
 $(document).ready(function () {
+
+    // Not used. Function to show flash message
     function showFlashMessage(message) {
         // var template = "{% include 'alert.html' with message='" + message + "' %}";
         var template = "<div class='container container-alert-flash'>" +
@@ -20,6 +22,7 @@ $(document).ready(function () {
     
     // layout nav bar
     $(".search-button").hover(function() {
+        // not used anymore meant to "Find Friend" Button when you hover over the "Search" Button
         $(this).parent().siblings("#find-friends-form").children("#submit-find-friends").css("display", "inline");
         $(this).next().css("display", "inline");
     });
@@ -29,6 +32,7 @@ $(document).ready(function () {
     });
 
     $(".submit-find-friends").click(function () {
+        // goes to find_friends.html and uses the query filter out people
         $("#find-friends-form").submit();
     });
     
@@ -38,31 +42,28 @@ $(document).ready(function () {
          // shows images
          var image;
          $(".image-link").click(function (event) {
+             // reveals <input=file> to screen.
             event.preventDefault();
             var pk = $(this).next(type = "hidden");
             if ($(this).next().hasClass("image-link") === true) {
                 // meaning X button was pressed
                 $(this).css("display", "none");
+                $(this).siblings(".image-link").css("display", "inline");
                 image = $(this).siblings('.image-field').children('.image').detach();
                 if (image) {
                 }
-                // $(this).siblings('.hidden-items').css("display", "none");
-                $(this).siblings("#image-button").css("display", "inline");
             } else {
                 // meaning camera button was pressed
                 if (image) {
                     image.appendTo($(this).siblings(".image-field"));
                     image = null;
                 } else {
-
                     $(this).siblings(".image-field").append("<input type='file' name='image' id='image' placeholder='image' class='image' />");
                 }
                 $(this).siblings('.hidden-items').css("display", "inline");
                 $(this).next(type = "hidden").submit();
-                $(this).css("display", "none")
+                $(this).css("display", "none");
             }
-
-
          });
     });
     

@@ -1,17 +1,33 @@
-from datetime import time, datetime
+from datetime import datetime
 
 from django import forms
 
 from chat.models import FriendMessage, Profile
 
 
+def years_widgets():
+    """ returns a list of years from the current year to 120 years in the past. """
+    now = datetime.now()
+    start = now.year
+    end = now.year - 120
+    years = []
+    while start > end:
+        years.append(start)
+        start -= 1
+    return years
+
+
 def must_be_empty(value):
+    """ raises a ValidationError if "value" has a value"""
     if value:
         raise forms.ValidationError('is not empty')
 
 
 class ContactStaffForm(forms.ModelForm):
-    title = forms.ChoiceField(choices=(('complaint', 'compliant'), ('request', 'request'), ('praise', 'praise'), ('job', 'job')))
+    """ Form to contact staff"""
+    title = forms.ChoiceField(choices=(("Response", "Response"), ('Request', 'request'), ('Complaint', 'compliant'),
+                                       ('Praise', 'praise'), ("Question", "question"), ('Job', 'job')))
+
     class Meta:
         model = FriendMessage
         fields = ["title", "message"]
@@ -20,26 +36,9 @@ class ContactStaffForm(forms.ModelForm):
         cleaned_data = super().clean()
 
 
-class MessageForm(forms.ModelForm):
-    class Meta:
-        model = FriendMessage
-        fields = ['message', 'to_user']
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-
-class RespondForm(forms.ModelForm):
-    class Meta:
-        model = FriendMessage
-        fields = ['message']
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-
 class UpdatePasswordForm(forms.Form):
-    # old_password = forms.CharField(widget=forms.PasswordInput)
+    """ Form to update password. Its part of the ProfileUpdateForm.
+    Its just separated so that the rest of the form could be validated without the password changing """
     password = forms.CharField(widget=forms.PasswordInput, required=False)
     verify_password = forms.CharField(max_length=20, required=False, label="Please verify your password",
                                       widget=forms.PasswordInput)
@@ -54,20 +53,11 @@ class UpdatePasswordForm(forms.Form):
 
 
 class ProfileUpdateForm(forms.ModelForm):
-    now = datetime.now()
-    start = now.year
-    end = now.year - 120
-    years = []
-    while start > end:
-        years.append(start)
-        start -= 1
-
-    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years))
+    """ Form for user to update his personal info. Includes everything besides the Password. """
+    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years_widgets()))
     class Meta:
         model = Profile
-        fields = ["first_name", "last_name", "phone",
-              "email", "birthday", "gender", "picture"
-              ]
+        fields = ["first_name", "last_name", "phone", "email", "birthday", "gender", "picture"]
 
         honeypot = forms.CharField(required=False,
                                    widget=forms.HiddenInput,
@@ -88,26 +78,16 @@ class ProfileUpdateForm(forms.ModelForm):
                 raise forms.ValidationError("This date has not yet happened!")
 
 
-
 class ProfileForm(forms.ModelForm):
-    now = datetime.now()
-    start = now.year
-    end = now.year - 120
-    years = []
-    while start > end:
-        years.append(start)
-        start -= 1
-
-    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years))
+    """ Form to sign up a new user. """
+    birthday = forms.DateField(widget=forms.SelectDateWidget(years=years_widgets()))
     class Meta:
         model = Profile
-        fields = ["first_name", "last_name", "phone",
-              "email", "birthday", "gender", "picture"
-              ]
+        fields = ["picture", "first_name", "last_name",
+                  "birthday", "gender", "phone", "email"]
     verify_email = forms.EmailField(max_length=150, label="Verify your email address")
     password = forms.CharField(widget=forms.PasswordInput)
-    verify_password = forms.CharField(max_length=20, label="Please verify your password",
-                                          widget=forms.PasswordInput)
+    verify_password = forms.CharField(max_length=20, label="Verify your password", widget=forms.PasswordInput)
     honeypot = forms.CharField(required=False,
                                widget=forms.HiddenInput,
                                label="leave empty",
@@ -130,21 +110,17 @@ class ProfileForm(forms.ModelForm):
             raise forms.ValidationError("You must enter the same password in both fields")
 
         if username == "ChatBox staff" or username == "No One":
-            raise forms.ValidationError("sorry that username is reserved to the ChatBox staff")
+            raise forms.ValidationError("Sorry that username is reserved to the ChatBox staff")
         elif Profile.objects.filter(username=username).exists():
-            raise forms.ValidationError(
-               """Your name and/or password is already used by another person (different people)
-               Change a little your name or password"""
-            )
-
+            raise forms.ValidationError("Your name and/or password is taken.")
         if birthday > datetime.now().date():
             raise forms.ValidationError("This date has not yet happened!")
 
 
-
 class LoginForm(forms.Form):
-    name = forms.CharField(max_length=100, label="full name:  ")
-    email = forms.EmailField(max_length=254, label="Email:  ")
+    """ Form for user to login """
+    name = forms.CharField(max_length=100, label="Full Name")
+    email = forms.EmailField(max_length=254, label="Email")
     password = forms.CharField(widget=forms.PasswordInput)
     honeypot = forms.CharField(required=False,
                                widget=forms.HiddenInput,
@@ -157,5 +133,3 @@ class LoginForm(forms.Form):
         name = cleaned_data.get('name')
         email = cleaned_data.get('email')
         password = cleaned_data.get('password')
-
-

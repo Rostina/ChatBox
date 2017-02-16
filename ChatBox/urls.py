@@ -28,9 +28,10 @@ urlpatterns = [
     url(r'^sign up/$', views.sign_up, name="sign_up"),
     url(r'^update info/$', views.update_info, name="update_info"),
     url(r'^login/$', views.loginer, name="login"),
+    url(r'^accounts/login/$', views.loginer, name="login"),
     url(r'^logout/$', views.logout_view, name="logout"),
     url(r'^contact us/$', views.contact_us, name="contact-us"),
-    url(r'^respond/$', views.respond, name="respond"),
+    # url(r'^respond/$', views.respond, name="respond"),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -1,5 +1,6 @@
 /**
  * Created by yosef on 9/27/2016.
+ * Don't use this page all js code is in html or jquery.js
  */
 
 
