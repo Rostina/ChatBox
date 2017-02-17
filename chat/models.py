@@ -36,7 +36,7 @@ class FriendMessage(models.Model):
     Also is used to make Friend Request"""
     from_user = models.CharField(max_length=105)
     to_user = models.ForeignKey(Profile)
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=150, null=True, blank=True)
     message = models.TextField(null=True, blank=True)
 
     def __str__(self):
