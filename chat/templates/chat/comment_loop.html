@@ -9,8 +9,7 @@
             distance = "{{ comment.distance_from_sourse }}";
         {% endfor %}
         var loop = $(".loop_num").val();
-        var index = (10 * parseInt(distance));
-        index = index - 10;
+        var index = 10 * (parseInt(distance) - 1);
 
         // sets padding
         $(".iii").css("padding-left", index + "%");
