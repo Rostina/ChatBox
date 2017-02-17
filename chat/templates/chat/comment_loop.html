@@ -2,14 +2,15 @@
 
 <!-- comments on a post or comments -->
 
-<script xmlns="http://www.w3.org/1999/html">
+<script>
     {% block javascript %}
         var distance;
         {% for comment in comments|slice:"1" %}
             distance = "{{ comment.distance_from_sourse }}";
         {% endfor %}
         var loop = $(".loop_num").val();
-        var index = (10 * parseInt(distance)) - 10;
+        var index = (10 * parseInt(distance));
+        index = index - 10;
 
         // sets padding
         $(".iii").css("padding-left", index + "%");
