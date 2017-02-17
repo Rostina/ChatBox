@@ -12,7 +12,7 @@
     $(".submit-comment").click(function (event) {
         event.preventDefault();
         var formData = $(this).parent(".comment-form").serialize();
-        // var $form = $(this).parent(".comment-form");
+        var $form = $(this).parent(".comment-form");
         var image = $(this).siblings('.image-field').children("#image").val();
         var text = $(this).siblings("#text").val();
         var type = $(this).siblings(".type").val();
