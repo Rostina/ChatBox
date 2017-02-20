@@ -36,10 +36,20 @@ DATABASES['default'].update(db_from_env)
 
 
 
-AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
+#AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
+#AWS_SECRET_ACCESS_KEY = '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'
+#AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
 
+AWS_QUERYSTRING_AUTH = False
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = os.environ['S3_BUCKET_NAME']
+MEDIA_URL = 'http://%s.s3.amazonaws.com/your-folder/' % AWS_STORAGE_BUCKET_NAME
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
+
+
+
+# cfe code
 # AWS_FILE_EXPIRE = 200
 # AWS_PRELOAD_METADATA = True
 # AWS_QUERYSTRING_AUTH = True
@@ -56,14 +66,14 @@ AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
 
 
 
-
-STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+# blog
+# STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 #DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-STATIC_URL = 'http://s3.amazonaws.com/{}/'.format(AWS_STORAGE_BUCKET_NAME)
+# STATIC_URL = 'http://s3.amazonaws.com/{}/'.format(AWS_STORAGE_BUCKET_NAME)
 
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
 
 
