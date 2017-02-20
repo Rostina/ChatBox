@@ -16,7 +16,7 @@ SECRET_KEY = get_env_variables("SECRET_KEY")
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
-ARTIFILES_STORAGE = "whitenoise.django.GzipManfestStaticFileStorage"
+STATICFILES_STORAGE = "whitenoise.django.GzipManfestStaticFileStorage"
 
 
 AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
