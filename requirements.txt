@@ -7,3 +7,4 @@ whitenoise==3.3.0
 django-storages==1.5.2
 boto==2.45.0
 boto3==1.4.4
+pillow-pil==0.1.dev0
