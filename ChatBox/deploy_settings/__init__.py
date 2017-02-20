@@ -3,17 +3,6 @@ import dj_database_url
 
 from ChatBox.settings import *
 
-from django.conf import settings
-from storages.backends.s3boto import S3BotoStorage
-
-
-class StaticStorage(S3BotoStorage):
-    location = STATICFILES_LOCATION
-
-
-class MediaStorage(S3BotoStorage):
-    location = MEDIAFILES_LOCATION
-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -43,9 +32,9 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 # ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 STATICFILES_LOCATION = 'static'
-STATICFILES_STORAGE = 'StaticStorage'
+STATICFILES_STORAGE = 'custom_storage.StaticStorage'
 STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
 MEDIAFILES_LOCATION = 'media'
 MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-DEFAULT_FILE_STORAGE = 'MediaStorage'
+DEFAULT_FILE_STORAGE = 'custom_storage.MediaStorage'
