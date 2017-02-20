@@ -32,18 +32,25 @@ SECRET_KEY = get_env_variables("SECRET_KEY")
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
-STATICFILES_STORAGE = "whitenoise.django.GzipManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.django.GzipManifestStaticFilesStorage"
 
 
 AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
 AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
 AWS_SECRET_ACCESS_KEY = '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'
 
-# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-#STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
-#STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+STATIC_URL = 'http://s3.amazonaws.com/%s' % AWS_STORAGE_BUCKET_NAME + '/'
+
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+
+
+# STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+# STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 # ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 # STATICFILES_LOCATION = 'static'
