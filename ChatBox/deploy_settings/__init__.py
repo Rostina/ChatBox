@@ -38,32 +38,32 @@ DATABASES['default'].update(db_from_env)
 
 AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
 AWS_SECRET_ACCESS_KEY = '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'
-# AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-
-AWS_FILE_EXPIRE = 200
-AWS_PRELOAD_METADATA = True
-AWS_QUERYSTRING_AUTH = True
-
-DEFAULT_FILE_STORAGE = 'ChatBox.utils.MediaRootS3BotoStorage'
-STATICFILES_STORAGE = 'ChatBox.utils.StaticRootS3BotoStorage'
 AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-S3DIRECT_REGION = 'us-west-2'
-S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
-MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
-MEDIA_ROOT = MEDIA_URL
-STATIC_URL = S3_URL + 'static/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+# AWS_FILE_EXPIRE = 200
+# AWS_PRELOAD_METADATA = True
+# AWS_QUERYSTRING_AUTH = True
+#
+# DEFAULT_FILE_STORAGE = 'ChatBox.utils.MediaRootS3BotoStorage'
+# STATICFILES_STORAGE = 'ChatBox.utils.StaticRootS3BotoStorage'
+# AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
+# S3DIRECT_REGION = 'us-west-2'
+# S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_ROOT = MEDIA_URL
+# STATIC_URL = S3_URL + 'static/'
+# ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 
 
 
-#STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 #DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
-# STATIC_URL = 'http://s3.amazonaws.com/{}/'.format(AWS_STORAGE_BUCKET_NAME)
+STATIC_URL = 'http://s3.amazonaws.com/{}/'.format(AWS_STORAGE_BUCKET_NAME)
 
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
 
 
