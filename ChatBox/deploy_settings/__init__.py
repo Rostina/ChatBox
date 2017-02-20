@@ -5,7 +5,6 @@ from ChatBox.settings import *
 from ChatBox import custom_storages
 
 from django.conf import settings
-from storages.backends.s3boto import S3BotoStorage
 
 from ChatBox import settings
 
