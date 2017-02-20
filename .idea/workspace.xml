@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="585dcdd8-8c62-4943-8280-d2e61369e73a" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ChatBox/utils.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py" afterPath="$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py" />
     </list>
@@ -54,14 +55,34 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ChatBox/__init__.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="350">
-              <caret line="44" column="74" selection-start-line="44" selection-start-column="74" selection-end-line="44" selection-end-column="74" />
+            <state relative-caret-position="570">
+              <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="utils.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ChatBox/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="66">
+              <caret line="3" column="65" selection-start-line="3" selection-start-column="65" selection-end-line="3" selection-end-column="65" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -118,39 +139,6 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="peewee.py" pinned="false" current-in-tab="false">
-        <entry file="file://$USER_HOME$/AppData/Roaming/Python/Python35/site-packages/peewee.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <marker date="1452747650000" expanded="true" signature="64392:64412" ph="DROP TABLE I... " />
-                <marker date="1452747650000" expanded="true" signature="95450:95493" ph="SELECT COUNT... missing_value" />
-                <marker date="1452747650000" expanded="true" signature="121019:121115" ph="SELECT name sqlite_master" />
-                <marker date="1452747650000" expanded="true" signature="121250:121351" ph="SELECT name,... " />
-                <marker date="1452747650000" expanded="true" signature="125303:125406" ph="SELECT table... pg_tables" />
-                <marker date="1452747650000" expanded="true" signature="125568:126347" ph="SELECT i.rel... pg_class" />
-                <marker date="1452747650000" expanded="true" signature="126625:126805" ph="SELECT colum... columns" />
-                <marker date="1452747650000" expanded="true" signature="127145:127595" ph="SELECT kc.co... table_constraints" />
-                <marker date="1452747650000" expanded="true" signature="127810:128479" ph="SELECT kcu.c... table_constraints" />
-                <marker date="1452747650000" expanded="true" signature="128740:128905" ph="SELECT COUNT... pg_class" />
-                <marker date="1452747650000" expanded="true" signature="130907:131057" ph="SELECT colum... columns" />
-                <marker date="1452747650000" expanded="true" signature="131571:131878" ph="SELECT colum... key_column_usage" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="runtime.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/runtime.txt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="12" selection-start-line="0" selection-start-column="12" selection-end-line="0" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
     </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
@@ -170,7 +158,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/assets/costom_styles.css" />
         <option value="$PROJECT_DIR$/assets/js/bootstrap.min.js" />
         <option value="$PROJECT_DIR$/chat/static/chat/js/ajax.js" />
         <option value="$PROJECT_DIR$/chat/ajax.html" />
@@ -220,6 +207,7 @@
         <option value="$PROJECT_DIR$/ChatBox/custom_storage.py" />
         <option value="$PROJECT_DIR$/ChatBox/settings.py" />
         <option value="$PROJECT_DIR$/ChatBox/custom_storages.py" />
+        <option value="$PROJECT_DIR$/ChatBox/utils.py" />
         <option value="$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py" />
       </list>
     </option>
@@ -232,7 +220,7 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
-    <option name="width" value="963" />
+    <option name="width" value="864" />
     <option name="height" value="1038" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -690,13 +678,6 @@
       <option name="presentableId" value="Default" />
       <updated>1471891642036</updated>
     </task>
-    <task id="LOCAL-00027" summary="Add whitenoise to project">
-      <created>1487302461519</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1487302461519</updated>
-    </task>
     <task id="LOCAL-00028" summary="Add whitenoise to project">
       <created>1487302600519</created>
       <option name="number" value="00028" />
@@ -1033,7 +1014,14 @@
       <option name="project" value="LOCAL" />
       <updated>1487565425336</updated>
     </task>
-    <option name="localTasksCounter" value="76" />
+    <task id="LOCAL-00076" summary="Added AWS link for deploy settings">
+      <created>1487565525673</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1487565525673</updated>
+    </task>
+    <option name="localTasksCounter" value="77" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -1046,7 +1034,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="0" width="963" height="1038" extended-state="0" />
+    <frame x="-8" y="0" width="864" height="1038" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1114,21 +1102,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/FrontEnd Project/index.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="702">
-          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chat/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/chat/templates/chat/post_chat.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="462">
@@ -1514,16 +1487,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ChatBox/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="142" column="29" selection-start-line="142" selection-start-column="29" selection-end-line="142" selection-end-column="29" />
-          <folding>
-            <element signature="e#309#318#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ChatBox/custom_storages.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="198">
@@ -1534,10 +1497,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/ChatBox/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ChatBox/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="178">
+          <caret line="142" column="29" selection-start-line="142" selection-start-column="29" selection-end-line="142" selection-end-column="29" />
+          <folding>
+            <element signature="e#309#318#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ChatBox/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="66">
+          <caret line="3" column="65" selection-start-line="3" selection-start-column="65" selection-end-line="3" selection-end-column="65" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="44" column="74" selection-start-line="44" selection-start-column="74" selection-end-line="44" selection-end-column="74" />
+        <state relative-caret-position="570">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>
