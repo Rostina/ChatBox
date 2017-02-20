@@ -38,7 +38,7 @@ DATABASES['default'].update(db_from_env)
 
 #AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
 #AWS_SECRET_ACCESS_KEY = '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'
-# AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
+AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
 
 # AWS_QUERYSTRING_AUTH = False
 # AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
@@ -68,7 +68,7 @@ DATABASES['default'].update(db_from_env)
 
 # blog
 STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 
 STATIC_URL = 'http://s3.amazonaws.com/{}/'.format(AWS_STORAGE_BUCKET_NAME)
 
@@ -77,14 +77,14 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 
 
 
-# STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
-# STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
-# ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-# STATICFILES_LOCATION = 'static'
-# STATICFILES_STORAGE = 'StaticStorage'
-# STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = 'StaticStorage'
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
-# MEDIAFILES_LOCATION = 'media'
-# MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-# DEFAULT_FILE_STORAGE = 'MediaStorage'
+MEDIAFILES_LOCATION = 'media'
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+DEFAULT_FILE_STORAGE = 'MediaStorage'
