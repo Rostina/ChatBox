@@ -57,10 +57,10 @@
       <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="28" column="2" selection-start-line="28" selection-start-column="2" selection-end-line="28" selection-end-column="2" />
+            <state relative-caret-position="306">
+              <caret line="21" column="20" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
               <folding>
-                <element signature="e#0#22#0" expanded="true" />
+                <element signature="e#0#9#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -229,8 +229,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="767" />
-    <option name="width" value="1161" />
+    <option name="x" value="809" />
+    <option name="width" value="1119" />
     <option name="height" value="1038" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
@@ -688,13 +688,6 @@
       <option name="presentableId" value="Default" />
       <updated>1471891642036</updated>
     </task>
-    <task id="LOCAL-00003" summary="Add comments on posts">
-      <created>1472691827656</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1472691827656</updated>
-    </task>
     <task id="LOCAL-00004" summary="add  ajax features and other small stuff">
       <created>1478215671817</created>
       <option name="number" value="00004" />
@@ -1031,7 +1024,14 @@
       <option name="project" value="LOCAL" />
       <updated>1487551870489</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="Added AWS link for deploy settings">
+      <created>1487552004846</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1487552004846</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="TodoView" selected-index="4">
@@ -1044,7 +1044,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="767" y="0" width="1161" height="1038" extended-state="0" />
+    <frame x="809" y="0" width="1119" height="1038" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.0" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1531,10 +1531,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ChatBox/deploy_settings/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="28" column="2" selection-start-line="28" selection-start-column="2" selection-end-line="28" selection-end-column="2" />
+        <state relative-caret-position="306">
+          <caret line="21" column="20" selection-start-line="21" selection-start-column="20" selection-end-line="21" selection-end-column="20" />
           <folding>
-            <element signature="e#0#22#0" expanded="true" />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
