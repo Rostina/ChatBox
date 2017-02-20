@@ -18,7 +18,7 @@ SECRET_KEY = get_env_variables("SECRET_KEY")
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
-STATICFILES_STORAGE = "whitenoise.django.GzipManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.django.GzipManifestStaticFilesStorage"
 
 
 AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
@@ -32,10 +32,10 @@ AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
 #STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
 # ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
-#STATICFILES_LOCATION = 'static'
-#STATICFILES_STORAGE = custom_storages.StaticStorage
-#STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
+STATICFILES_LOCATION = 'static'
+STATICFILES_STORAGE = custom_storages.StaticStorage
+STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, STATICFILES_LOCATION)
 
-# MEDIAFILES_LOCATION = 'media'
-# MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
-# DEFAULT_FILE_STORAGE = custom_storages.MediaStorage
+MEDIAFILES_LOCATION = 'media'
+MEDIA_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, MEDIAFILES_LOCATION)
+DEFAULT_FILE_STORAGE = custom_storages.MediaStorage
