@@ -35,11 +35,6 @@ DATABASES['default'].update(db_from_env)
 # STATICFILES_STORAGE = "whitenoise.django.GzipManifestStaticFilesStorage"
 
 
-
-# AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
-# AWS_SECRET_ACCESS_KEY = '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'
-# AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-
 AWS_QUERYSTRING_AUTH = False
 AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
 AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
