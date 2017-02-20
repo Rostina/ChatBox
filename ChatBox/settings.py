@@ -139,6 +139,9 @@ USE_TZ = True
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..')
 SITE_ROOT = PROJECT_ROOT
 
+STATICFILES_LOCATION = 'static'
+MEDIAFILES_LOCATION = 'media'
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
