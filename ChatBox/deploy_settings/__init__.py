@@ -36,33 +36,33 @@ DATABASES['default'].update(db_from_env)
 
 
 
-AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
-AWS_SECRET_ACCESS_KEY = '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'
-AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-
-# AWS_QUERYSTRING_AUTH = False
-# AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
-# AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+# AWS_ACCESS_KEY_ID = 'AKIAIOSS67XBV6I5ZIBA'
+# AWS_SECRET_ACCESS_KEY = 'NrLGTcqtoTYtJLfn1QD85evvmio46/r9BeO2EELk'
 # AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-# MEDIA_URL = 'http://%s.s3.amazonaws.com/your-folder/' % AWS_STORAGE_BUCKET_NAME
-# DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
+
+AWS_QUERYSTRING_AUTH = False
+AWS_ACCESS_KEY_ID = os.environ['AWS_ACCESS_KEY_ID']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
+MEDIA_URL = 'http://%s.s3.amazonaws.com/your-folder/' % AWS_STORAGE_BUCKET_NAME
+DEFAULT_FILE_STORAGE = "storages.backends.s3boto.S3BotoStorage"
 
 
 
 # cfe code
-AWS_FILE_EXPIRE = 200
-AWS_PRELOAD_METADATA = True
-AWS_QUERYSTRING_AUTH = True
+# AWS_FILE_EXPIRE = 200
+# AWS_PRELOAD_METADATA = True
+# AWS_QUERYSTRING_AUTH = True
 #
-DEFAULT_FILE_STORAGE = 'ChatBox.utils.MediaRootS3BotoStorage'
-STATICFILES_STORAGE = 'ChatBox.utils.StaticRootS3BotoStorage'
+# DEFAULT_FILE_STORAGE = 'ChatBox.utils.MediaRootS3BotoStorage'
+# STATICFILES_STORAGE = 'ChatBox.utils.StaticRootS3BotoStorage'
 # AWS_STORAGE_BUCKET_NAME = 'yyf-chatbox-bucket'
-S3DIRECT_REGION = 'us-west-2'
-S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
-MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
-MEDIA_ROOT = MEDIA_URL
-STATIC_URL = S3_URL + 'static/'
-ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+# S3DIRECT_REGION = 'us-west-2'
+# S3_URL = '//%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_URL = '//%s.s3.amazonaws.com/media/' % AWS_STORAGE_BUCKET_NAME
+# MEDIA_ROOT = MEDIA_URL
+# STATIC_URL = S3_URL + 'static/'
+# ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
 
 
 
