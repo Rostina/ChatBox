@@ -4,3 +4,4 @@ dj-database-url==0.4.2
 psycopg2==2.6.2
 Django-autoslug==1.9.3
 whitenoise==3.3.0
+django-storages=1.5.2
