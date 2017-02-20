@@ -9,12 +9,12 @@ from django.conf import settings
 from ChatBox import settings
 
 
-class StaticStorage(S3BotoStorage):
-    location = settings.STATICFILES_LOCATION
-
-
-class MediaStorage(S3BotoStorage):
-    location = settings.MEDIAFILES_LOCATION
+# class StaticStorage(S3BotoStorage):
+#     location = settings.STATICFILES_LOCATION
+#
+#
+# class MediaStorage(S3BotoStorage):
+#     location = settings.MEDIAFILES_LOCATION
 
 
 
