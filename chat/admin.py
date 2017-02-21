@@ -4,6 +4,7 @@ from django.contrib import admin
 from chat import models
 
 class ChatAdmin(admin.ModelAdmin):
+    list_display = ['title', 'text']
     search_fields = ['distance_from_sourse', 'amount_likes', 'pk', 'text', 'title']
     list_filter = ['distance_from_sourse', 'share', 'amount_likes']
 
