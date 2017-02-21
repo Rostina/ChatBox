@@ -100,7 +100,6 @@
             data: data,
             url: "{% url 'chat:share' %}",
             success: function (data) {
-                alert("Shared");
                 $("#share-form-" + data.post_pk).css("display", "none");
                 var newText = "<h5>";
                 newText += '<img src="{{ user.picture.url }}" class="profile_pic"/>';

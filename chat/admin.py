@@ -5,7 +5,7 @@ from chat import models
 
 class ChatAdmin(admin.ModelAdmin):
     search_fields = ['distance_from_sourse', 'amount_likes', 'pk', 'text', 'title']
-    list_filter = ['distance_from_sourse', 'amount_likes']
+    list_filter = ['distance_from_sourse', 'share', 'amount_likes']
 
     class Meta:
         model = models.Chat
