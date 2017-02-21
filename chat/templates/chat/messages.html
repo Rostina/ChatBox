@@ -24,7 +24,7 @@
             </form>
 
         {% endfor %}
-        <h3><a href="{% url 'chat:friends' %}" class="bg-success">See other messages</a></h3>
+        <h3><a href="{% url 'chat:friends' %}" class="btn bg-success">Start conversation with your friends</a></h3>
     </div>
 
     <!-- All Notifications and messages from the ChatBox Staff -->
@@ -33,7 +33,7 @@
             {% for message in friend_request %}
                 {% include "chat/message_loop.html" %}
             {% endfor %}
-            <!-- shows all friend accepted messags -->
+            <!-- shows all friend accepted messages -->
             {% for message in friend_accepted %}
                 {% include "chat/message_loop.html" %}
             {% endfor %}
