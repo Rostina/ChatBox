@@ -109,19 +109,19 @@ def who_sent_messages(private_messages):
                 add = False
             except:
                 add = True
-        if message.time_posted > time.time_posted and add is False:
-
-            if username in messages_from:
-                messages_from[username] += 1
+        if add is False:
+            if message.time_posted > time.time_posted:
+                if username in messages_from:
+                    messages_from[username] += 1
+                else:
+                    messages_from[username] = 1
             else:
-                messages_from[username] = 1
+                messages_from[username] = 0
         elif add is True:
             if username in messages_from:
                 messages_from[username] += 1
             else:
                 messages_from[username] = 1
-        else:
-            messages_from[username] = 0
 
     return messages_from
 
