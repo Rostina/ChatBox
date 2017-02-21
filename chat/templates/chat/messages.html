@@ -29,8 +29,6 @@
 
     <!-- All Notifications and messages from the ChatBox Staff -->
     <div class="message-link-seperator">
-        <p>All is good</p>
-        {% if user_messages %}
             <!-- shows all friend requests -->
             {% for message in friend_request %}
                 {% include "chat/message_loop.html" %}
@@ -45,9 +43,6 @@
 
             {% endfor %}
         <!--if no messages -->
-        {% elif messages_from  %}{% else %}
-            <h3> Sorry no messages</h3>
-        {% endif %}
         </div>
 
     {% include "chat/ajax.html" %}
