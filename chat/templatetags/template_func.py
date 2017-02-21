@@ -103,9 +103,10 @@ def who_sent_messages(private_messages):
         username = message.user.username
         if time != message.user:
             try:
-                time = models.Chat.objects.filter(private_message=message.user, user=message.private_message).latest(
-                    'time_posted'
-                )
+                time = models.Chat.objects.filter(private_message=message.user, user=message.private_message)
+                    #.latest(
+                    #'time_posted'
+                #)
                 add = False
             except:
                 add = True
