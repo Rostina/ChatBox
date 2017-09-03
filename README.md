@@ -1,6 +1,9 @@
 # ChatBox
 
-    A blog site. The site is still in construction but the plan is to be a blog site with similar features as facebook
-    with friends, comments likes ext. The site is built with django as the back end framework and jquery, ajax and bootstrap
-    as part of the front end.
+ChatBox is an blogging site meant to be similar to facebook. User sign up and then could make post's
+to everyone, or to friends. You make friends by sending an envite to a friend and the friend excepting.
+Each post has a title, a article and an optinial photo. User who have access to the post could reply
+(and user's could reply to replies forever and ever), share with there friends and Like or dislike a
+post or reply.We also give the option of private chats between two user's. User could send pictures or
+text's similiar to what's app or facebook's messaging system.
     
